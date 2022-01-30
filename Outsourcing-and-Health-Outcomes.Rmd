@@ -1,0 +1,1913 @@
+---
+title: Is the outsourcing of healthcare services to the private sector associated with higher treatable mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020
+author:
+  - name: Benjamin Goodair
+    email: benjamin.goodair@spi.ox.ac.uk
+    affiliation: Department of Social Policy and Intervention University of Oxford
+    footnote: 1
+  - name: Aaron Reeves
+    email: aaron.reeves@spi.ox.ac.uk
+    affiliation: Department of Social Policy and Intervention University of Oxford
+    footnote: 0
+  - name: Charles Rahal
+    email: charles.rahal@sociology.ox.ac.uk
+    affiliation: Department of Sociology University of Oxford
+    footnote: 0
+address:
+  - code: Department of Social Policy and Intervention University of Oxford
+    address: Department of Social Policy and Intervention, Barnett House, 32 -37 Wellington Square, Oxford OX1 2ER
+  - code: Department of Sociology University of Oxford
+    address: Department of Sociology, 42-43 Park End Street, Oxford, OX1 1JD
+footnote:
+  - code: 1
+    text: "Corresponding Author"
+abstract: |
+ Background: In 2012 the Health and Social Care act enabled a rapid increase in the provision of healthcare services by for-profit providers to the English NHS - hoping to incentivise performance through additional competition. However, some worry that contracting out health services to for-profit providers may lead to cost-cutting and poorer outcomes for patients. We aim to assess whether increased outsourcing to the private sector is associated with changes to treatable mortality rates, and, therefore, with quality of healthcare. 
+ 
+ Methods: We construct an entirely novel database compiling every procurement contract over 7 years (n = 647,541, total value = £204.1bn) across 173 of England’s Clinical Commissioning Groups (regional health boards). We identify institutions registered on the Companies House registry which supply regional commissioners in England’s NHS, and then aggregate this annually with local mortality data. We used maltivariate longitdudinal regression to analyse the effects of for-profit outsourcing on mortality rates in the following year. We account for year and individual fixed effects, control potential confounders and run a number of sensitivity checks.	 
+
+ Findings: An annual increase of one percentage point of outsourcing to the private sector corresponds with an annual increase in treatable mortality of 0.40% or 0.30 deaths per 100,000 population (95% CI 0·15% to 0·64%; p= 0.001611) in the following year. Relative to if outsourcing was kept at an average level in 2013, outsourcing can account for an additional 502 treatable deaths over this period (95% CI 383 to 622).
+
+ Interpretation: The privatisation of England’s NHS, through the outsourcing of services to for-profit companies, dramatically increased in the period 2013 to 2019. Private sector outsourcing corresponds with a decline in the quality of healthcare services, resulting in significantly increased rates of treatable mortality.  
+ 
+ Funding: This work is supported by The Wellcome Trust [221160/Z/20/Z] and [220206/Z/20/Z]
+ 
+preamble: |
+  \usepackage[nomarkers]{endfloat}
+  \linenumbers
+  \usepackage{setspace}
+  \doublespacing
+  \usepackage{float}
+  \floatplacement{figure}{H}
+  \usepackage{cite}
+
+journal: "The Lancet"
+date: "`r Sys.Date()`"
+bibliography: bibo.bib
+#linenumbers: true
+#numbersections: true
+
+csl: bmj.cls
+output: rticles::elsevier_article
+layout:  3p
+figure_caption: FALSE
+---
+
+
+```{r setup, include = FALSE}
+
+#set chunk options to remove warning messages and set figure dimensions
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, 
+                      dev="cairo_pdf", fig.width=6, fig.height=4.5)
+rm(list=setdiff(ls(), c("")))
+
+
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+
+
+packages <- c("zoo","runner" , "tidyverse",    "future.apply", "ggplot2","clubSandwich", "stargazer","lme4" , "pracma",  "CBPS",  "plm", "reshape2", "knitr", "cobalt", "ggthemes", "gtsummary", "extrafont", "pastecs", "png" ,"devtools", "tinytex", "citr")
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+
+
+# Install the stable development version of papaja and citr from GitHub
+
+if(!"papaja" %in% rownames(installed.packages())) devtools::install_github("crsh/papaja")
+
+if(!"citr" %in% rownames(installed.packages())) devtools::install_github("crsh/citr")
+
+#load packages
+library("papaja")
+library(zoo)
+library(runner)
+library(tidyverse)
+library(reshape2)
+library(CBPS)
+library(cobalt)
+library(future.apply)
+library(margins)
+library(ggthemes)
+library(citr)
+library(pracma)
+library(plm)
+library(gtsummary)
+library(extrafont)
+library(clubSandwich)
+library(pastecs)
+library(png)
+library(lme4)
+library(stargazer)
+library(knitr)
+library(devtools)
+library(tinytex)
+r_refs("r-references.bib")
+```
+\newpage
+
+# Introduction
+
+## Background
+
+In England, the 2012 Health and Social Care Act encouraged, through outlawing anti-competitive behaviour and introducing 'Any Qualified Provider' contracts, the outsourcing of services from state-owned providers to private for-profit (PFP) and private not-for-profit (PNFP) healthcare providers [@RN27; @RN104; @RN80]. Proponents of the 2012 reforms believed that it would improve the quality of care due to the innovative practices of for-profit companies and overall better performance as additional competition creates extra incentives for all providers [@RN55; @RN97]. Others were less optimistic questioning whether the benefits would be realised and some argued that the influx of private healthcare providers would worsen quality through cost-cutting behaviours and selective service provision [@RN122; @RN54]. Despite the fervent debates on the impacts of 'creeping privatisation' in England's NHS, little is known about its impacts. The reorganisation in 2012 allocated responsibility of data transparency to each individual Clinical Commissioning Group (CCG). Consequent discrepancies in the location and availability of decentralised commissioning expenditure has previously made it unfeasible to rigorously analyse levels of outsourcing and it is unclear whether services are correspondingly better or worse.
+
+Why might introducing new for-profit healthcare companies impact patient outcomes? Literature evaluating the differing patient-outcomes of individual PFP, PNFP or public healthcare providers typically finds a 'for-profit gap' in service quality as non-profit providers deliver better quality services [@RN127; @RN33; @RN41]. However these findings are often inconclusive in that they do not analyse the aggregate effect of outsourcing on service-wide performance. Difficulties also exist when comparing outcomes for the different case-mixes of private and public services, making this literature insufficient in understanding whether outsourcing on aggregate improves or worsens health services [@RN104; @RN39]. A previous example of a period of extensive privatisation in Italy was found to have been associated with increased mortality rates [@RN117]. However, whether the years following England's 2012 reforms represent another example of privatisation-induced mortality rises is entirely unknown.
+
+This period of for-profit outsourcing from England's NHS has coincided with a worsening trend in some indicators of healthcare quality. Treatable mortality rates have stagnated since 2013, breaking from a trend of decline over the previous 10 years and leaving England with mortality rates which compare poorly to other high-income countries [@RN134]. Similarly, increases in waiting times and decreased patient satisfaction with accessibility and discharge timing paint a picture of a service failing to maintain standards of care [@RN130; @RN135]. Why has service quality been declining in England? Research suggests that insufficient levels of funding are an important factor, leading to delayed discharges from care and increases in mortality [@RN129; @RN132]. However, another theory, which this paper tests empirically, is that outsourcing to for-profit companies further contributes to this observed crisis in healthcare standards.
+
+This study aims to understand whether increases in outsourcing to PFP providers from England's CCGs is associated with increases, decreases or no change to the levels of quality in healthcare provision. This study will assess the aggregate effects of outsourcing in England's publicly funded health system by exploiting variations over time in local health outcomes. This approach enables what is, to the authors' knowledge, the first empirical evaluation of one of the most controversial reforms in England's recent history.
+
+# Methods
+We constructed an entirely novel database compiling every procurement contract between 2013 and 2020 (n = 647,541, total value = £204.1bn). This allowed us to analyse the impacts of for-profit outsourcing in unprecedented detail, conducting the first robust empirical assessment of for-profit outsourcing from the NHS following the 2012 Health and Social Care Act.
+
+## Data Collection
+
+Procurement contracts were collected using web-scraping tools sourced from each CCG's website. In total 12,709 data files containing CCG contracts were downloaded, parsed and cleaned. The names of suppliers in these files were then matched to names in the Companies House Register, Central Register of Charities and NHS Digital using algorithmic reconciliation of the names of suppliers, as outlined by Rahal and Mohan (forthcoming).
+
+Table 1 lists our study variables. The response variable is our measure for healthcare quality 'treatable mortality' which can be defined as: "deaths that can be mainly avoided through timely and effective healthcare interventions, including secondary prevention and treatment" [@RN124]. This measure is an age-standardised rate of mortality per 100,000 population for specific causes of death, measured at the approximate CCG boundary. Treatable mortality excludes deaths which have causes which could be primarily avoided through public health interventions such as such as lung cancer, drug poisoning and traffic incidents. The explanatory variable of interest is a measure of 'outsourcing' which can be defined as: 'Commissioning expenditure which is received by for-profit companies as a percent of total expenditure'. This value excludes expenditure received by PNFP organisations as we are specifically interested in the aggregate effects of outsourcing to providers which have profit-maximisation incentives.
+
+```{r, echo=FALSE, results='asis'}
+#download data
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+
+myDataCCG <- read.csv("Data/payments_ccg_final.csv")
+
+#format date variable
+myDataCCG$date <- as.Date(myDataCCG$date, format =  "%Y-%m-%d")
+
+#remove observations before April 2013
+
+myDataCCG <- myDataCCG[which(myDataCCG$date>="2013-04-01"),]
+
+#identify private sector companies - 4 possible conditions: matched with companies house and has no charities registration number. Has a companies number and no charities registration number. has a company category and no charities registration number. Has a company number, and was placed as no match after my manual check. Treat numbers as double to induce NAs
+
+myDataCCG$CompanyCategory[myDataCCG$CompanyCategory==""] <- NA 
+
+myDataCCG <- myDataCCG %>% mutate(PrivateSector = ifelse((myDataCCG$match_type=="Companies House"&is.na(as.double(myDataCCG$CharityRegNo)))|(!is.na(as.double(myDataCCG$CompanyNumber))& is.na(as.double(myDataCCG$CharityRegNo)))| (!is.na(myDataCCG$CompanyCategory)&is.na(as.double(myDataCCG$CharityRegNo)))|(myDataCCG$audit_type=="3"&myDataCCG$match_type=="No Match"&!is.na(as.double(myDataCCG$CompanyNumber))),1,0))
+
+#create year and month variables
+myDataCCG$month <- format(myDataCCG$date,"%m/%y")
+myDataCCG$year <- format(myDataCCG$date,"%Y")
+
+
+####make factor variables for aggregating####
+
+myDataCCG$dept <- factor(myDataCCG$dept)
+myDataCCG$month <- factor(myDataCCG$month)
+####create total amount per month variables####
+
+totalsumCCG <- myDataCCG[c(7,10,26,27)]
+totalsumCCG <- aggregate(. ~dept+month+year, data=totalsumCCG, sum)
+
+totalsumCCGprivate <- myDataCCG[c(7,10,25,26,27)]
+totalsumCCGprivate <- totalsumCCGprivate[which(totalsumCCGprivate$PrivateSector==1),]
+totalsumCCGprivate <- aggregate(. ~dept+month+year, data=totalsumCCGprivate, sum)
+totalsumCCGprivate <- totalsumCCGprivate[-c(5)]
+
+names(totalsumCCG)[names(totalsumCCG)=="amount"] <- "Total_Procurement_Spend"
+names(totalsumCCGprivate)[names(totalsumCCGprivate)=="amount"] <- "Total_Private_sector_spend"
+
+####create variables for the Percent spend in private sector, third sector and select sectors####
+
+PrivateCCG <- myDataCCG[which(myDataCCG$PrivateSector==1),]
+PrivateCCG <- PrivateCCG[c(7,10,26,27)]
+PrivateCCG <- aggregate(. ~dept+month+year, data=PrivateCCG, sum)
+names(PrivateCCG)[names(PrivateCCG)=="amount"] <- "Private_Sector_Procurement_Spend"
+
+
+
+MyPanelDataCCG <- merge(totalsumCCG, PrivateCCG, by=c("dept", "month", "year"), all=TRUE)
+
+MyPanelDataCCG <- merge(MyPanelDataCCG, totalsumCCGprivate, by=c("dept", "month", "year"), all=TRUE)
+
+#Turn NAs which have observations in total spend column  into observed 0s
+
+MyPanelDataCCG$Private_Sector_Procurement_Spend[is.na(MyPanelDataCCG$Private_Sector_Procurement_Spend)] =0
+MyPanelDataCCG$Total_Private_sector_spend[is.na(MyPanelDataCCG$Total_Private_sector_spend)] =0
+
+####Create annual panel dataset####
+
+MyAnnualDataCCG <- MyPanelDataCCG[-c(2)] 
+
+MyAnnualDataCCG <- aggregate(. ~dept+year, data=MyAnnualDataCCG, sum, na.rm=TRUE, na.action=NULL)
+###Create three year panel dataset for multi-level models in chunk 4
+
+MyPanelDataCCG1315 <- MyPanelDataCCG[which(MyPanelDataCCG$year=="2013"|MyPanelDataCCG$year=="2014"|MyPanelDataCCG$year=="2015"),]
+MyPanelDataCCG1315$threeyears <- "X2013.2015"  
+
+MyPanelDataCCG1416 <- MyPanelDataCCG[which(MyPanelDataCCG$year=="2016"|MyPanelDataCCG$year=="2014"|MyPanelDataCCG$year=="2015"),]
+MyPanelDataCCG1416$threeyears <- "X2014.2016"  
+
+MyPanelDataCCG1517 <- MyPanelDataCCG[which(MyPanelDataCCG$year=="2016"|MyPanelDataCCG$year=="2017"|MyPanelDataCCG$year=="2015"),]
+MyPanelDataCCG1517$threeyears <- "X2015.2017"  
+
+MyPanelDataCCG1618 <- MyPanelDataCCG[which(MyPanelDataCCG$year=="2016"|MyPanelDataCCG$year=="2017"|MyPanelDataCCG$year=="2018"),]
+MyPanelDataCCG1618$threeyears <- "X2016.2018"  
+
+MyPanelDataCCG1719 <- MyPanelDataCCG[which(MyPanelDataCCG$year=="2017"|MyPanelDataCCG$year=="2018"|MyPanelDataCCG$year=="2019"),]
+MyPanelDataCCG1719$threeyears <- "X2017.2019"  
+
+MyPanelDataCCG1820 <- MyPanelDataCCG[which(MyPanelDataCCG$year=="2018"|MyPanelDataCCG$year=="2019"|MyPanelDataCCG$year=="2020"),]
+MyPanelDataCCG1820$threeyears <- "X2018.2020"  
+
+MyPanelDataCCG1315 <- MyPanelDataCCG1315[-c(2,3)]
+MyPanelDataCCG1416 <- MyPanelDataCCG1416[-c(2,3)]
+MyPanelDataCCG1517 <- MyPanelDataCCG1517[-c(2,3)]
+MyPanelDataCCG1618 <- MyPanelDataCCG1618[-c(2,3)]
+MyPanelDataCCG1719 <- MyPanelDataCCG1719[-c(2,3)]
+MyPanelDataCCG1820 <- MyPanelDataCCG1820[-c(2,3)]
+
+MyPanelDataCCG1315 <- aggregate(. ~dept+threeyears, data=MyPanelDataCCG1315, sum)
+MyPanelDataCCG1416 <- aggregate(. ~dept+threeyears, data=MyPanelDataCCG1416, sum)
+MyPanelDataCCG1517 <- aggregate(. ~dept+threeyears, data=MyPanelDataCCG1517, sum)
+MyPanelDataCCG1618 <- aggregate(. ~dept+threeyears, data=MyPanelDataCCG1618, sum)
+MyPanelDataCCG1719 <- aggregate(. ~dept+threeyears, data=MyPanelDataCCG1719, sum)
+MyPanelDataCCG1820 <- aggregate(. ~dept+threeyears, data=MyPanelDataCCG1820, sum)
+
+threeyrspend <- rbind(MyPanelDataCCG1315,MyPanelDataCCG1416,MyPanelDataCCG1517,MyPanelDataCCG1618,MyPanelDataCCG1719,MyPanelDataCCG1820 )
+
+
+####Turn spend variables into % of total procurement spend####  
+
+
+MyAnnualDataCCG$Private_Sector_Procurement_Spend <-(MyAnnualDataCCG$Private_Sector_Procurement_Spend/MyAnnualDataCCG$Total_Procurement_Spend)*100
+threeyrspend$Private_Sector_Procurement_Spend <-(threeyrspend$Private_Sector_Procurement_Spend/threeyrspend$Total_Procurement_Spend)*100
+
+####Make proper lags####
+
+MyAnnualDataCCGlags <- MyAnnualDataCCG[c(1,2,4)]
+MyAnnualDataCCGlags$Lagfirstprive <- MyAnnualDataCCGlags$Private_Sector_Procurement_Spend
+
+MyAnnualDataCCGlags <- MyAnnualDataCCGlags[-c(3)]
+
+MyAnnualDataCCGlags$year <- as.character(MyAnnualDataCCGlags$year)
+
+MyAnnualDataCCGlags$year <- as.double(MyAnnualDataCCGlags$year)+1
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, MyAnnualDataCCGlags, by = c("dept", "year"),all=T)
+
+
+
+#Add CCG outcome variables: Annual/ Treatable mortality
+avoidable_mortality <- read_csv("Data/avoidablemortalitybyccg2018.csv") 
+treatable_mortality <- read_csv("Data/treatable_mortality.csv") 
+preventable_mortality <- read_csv("Data/preventablemort.csv") 
+preventable_mortality18 <- read_csv("Data/preventablemort18.csv") 
+
+ccg_codes <- read_csv("Data/CCG_codes.csv")
+
+#reshape raw data into panel data format
+
+avoidable_mortality <- melt(avoidable_mortality,id = c("CCG_Name", "ccg19cd"), variable.name = "year")
+names(avoidable_mortality)[names(avoidable_mortality)=="value"] <- "Avoidable_Mortality_Rate"
+
+treatable_mortality <- melt(treatable_mortality,id =  "ccg19cd", variable.name = "year")
+names(treatable_mortality)[names(treatable_mortality)=="value"] <- "Treatable_Mortality_Rate"
+
+preventable_mortality <- melt(preventable_mortality,id =  "ccg19cd", variable.name = "year")
+names(preventable_mortality)[names(preventable_mortality)=="value"] <- "Preventatable_Mortality_Rate"
+
+preventable_mortality18 <- melt(preventable_mortality18,id =  "ccg19cd", variable.name = "year")
+names(preventable_mortality18)[names(preventable_mortality18)=="value"] <- "Preventatable_Mortality_Rate"
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, ccg_codes, by="dept", all.x=TRUE)
+
+#add 2019 values for treatable and avoidable mortality
+
+avoid2019<-read_csv("Data/avoidablemortalitybyccg2019.csv")
+treat2019 <- read_csv("Data/treatablemortalitybyccg2019.csv")
+
+avoid2019$year <- factor(2019)
+treat2019$year <- factor(2019)
+
+avoidable_mortality <- avoidable_mortality[-c(1)]
+
+avoidable_mortality <- rbind(avoidable_mortality, avoid2019)
+preventable_mortality <- rbind(preventable_mortality18, preventable_mortality)
+preventable_mortality <- unique(preventable_mortality)
+preventable_mortality <- preventable_mortality[complete.cases(preventable_mortality$ccg19cd),]
+
+treatable_mortality <- rbind(treatable_mortality, treat2019)
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, avoidable_mortality, by=c("ccg19cd", "year"), all.x=TRUE)
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, treatable_mortality, by=c("ccg19cd", "year"), all.x=TRUE)
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, preventable_mortality, by=c("ccg19cd", "year"), all.x=TRUE)
+
+
+#Panel Controls
+
+#download data
+localauthority <-read_csv("Data/LSOAtoCCGtoLAD19.csv")
+
+localauthority <- localauthority[c(4,9, 10)]
+
+localauthority <- unique(localauthority)
+
+ethnicitypanel <- read_csv("Data/ethnicitypanel.csv")
+educationpanel <- read_csv("Data/educationpanel.csv")
+unemploymentpanel <- read_csv("Data/unemployment.csv")
+claimantpanel <- read_csv("Data/claimantcounts.csv")
+poppanel <- read_csv("Data/population_panel.csv")
+pop2020 <- read_csv("Data/2020pop.csv")
+laspend2012 <- read_csv("Data/LAspend2012.csv")
+laspend2013 <- read_csv("Data/LAspend2014.csv")
+laspend2015 <- read_csv("Data/LAspend2015.csv")
+laspend2016 <- read_csv("Data/LAspend2016.csv")
+laspend2017 <- read_csv("Data/LAspend2017.csv")
+laspend2018 <- read_csv("Data/LAspend2018.csv")
+laspend2019 <- read_csv("Data/LAspend2019.csv")
+laspend2020 <- read_csv("Data/LAspend2020.csv")
+laspend2014 <- read_csv("Data/LAspend2014.csv")
+gdhisw <- read_csv("Data/gdhipersw.csv")
+gdhilon <- read_csv("Data/gdhiperlon.csv")
+gdhise <- read_csv("Data/gdhiperse.csv")
+gdhinw <- read_csv("Data/gdhipernw.csv")
+gdhiwm <- read_csv("Data/gdhiperwm.csv")
+gdhiem <- read_csv("Data/gdhiperem.csv")
+gdhiyh <- read_csv("Data/gdhiperyh.csv")
+gdhine <- read_csv("Data/gdhimillsne.csv")
+gdhiee <- read_csv("Data/gdhiperee.csv")
+
+gdhiee <- gdhiee[-c(12)]
+
+gdhi <- rbind(gdhiyh, gdhisw,gdhise,gdhine,gdhinw,gdhiem,gdhiwm,gdhilon, gdhiee )
+
+gdhi <- gdhi[-c(1,3)]
+names(gdhi)[names(gdhi)=="LAD code"] <- "LAD19CD"
+
+pop2020$year <- 2020
+laspend2012$year <- 2012
+laspend2013$year <- 2013
+laspend2015$year <- 2015
+laspend2016$year <- 2016
+laspend2017$year <- 2017
+laspend2018$year <- 2018
+laspend2019$year <- 2019
+laspend2020$year <- 2020
+laspend2014$year <- 2014
+
+laspend2012 <- laspend2012[c(2,4,5)]
+laspend2013 <- laspend2013[c(2,4,5)]
+laspend2014 <- laspend2014[c(2,4,5)]
+laspend2015 <- laspend2015[c(3,6,7)]
+laspend2016 <- laspend2016[c(3,5,6)]
+laspend2017 <- laspend2017[c(3,5,6)]
+laspend2018 <- laspend2018[c(3,5,6)]
+laspend2019 <- laspend2019[c(3,5,6)]
+laspend2020 <- laspend2020[c(3,5,6)]
+
+laspend <- rbind(laspend2012, laspend2013, laspend2014, laspend2015, laspend2016, laspend2017, laspend2018, laspend2019, laspend2020)
+
+poppanel <- melt(poppanel,id =  c("LAD19CD", "LAD19NM"), variable.name = "year")
+names(poppanel)[names(poppanel)=="value"] <- "Est_Population"
+
+gdhi <- melt(gdhi,id =  c("LAD19CD"), variable.name = "year")
+names(gdhi)[names(gdhi)=="value"] <- "GDHI_per_person"
+
+
+ethnicitypanel <- melt(ethnicitypanel,id =  "LAD19NM", variable.name = "year")
+names(ethnicitypanel)[names(ethnicitypanel)=="value"] <- "BAME_percent"
+
+educationpanel <- melt(educationpanel,id =  "LAD19NM", variable.name = "year")
+names(educationpanel)[names(educationpanel)=="value"] <- "Qual_lvl4_percent"
+
+unemploymentpanel <- melt(unemploymentpanel,id =  "LAD19NM", variable.name = "year")
+names(unemploymentpanel)[names(unemploymentpanel)=="value"] <- "Unemployment_percent"
+
+claimantpanel <- melt(claimantpanel,id =  "LAD19NM", variable.name = "year")
+names(claimantpanel)[names(claimantpanel)=="value"] <- "Claimant_percent"
+
+
+#convert data to ccgs by averaging based on a LA to CCG lookup found here https://geoportal.statistics.gov.uk/search?q=LSOA_CCG_LAD_LU&sort=name
+
+panelcontrols <- merge(localauthority, unemploymentpanel, by="LAD19NM", all.x=T)
+
+panelcontrols <- merge(panelcontrols, educationpanel, by=c("LAD19NM", "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, ethnicitypanel, by=c("LAD19NM", "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, poppanel, by=c("LAD19NM", "LAD19CD", "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, laspend, by=c("LAD19NM",  "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, claimantpanel, by=c("LAD19NM",  "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, gdhi, by=c("LAD19CD",  "year"), all.x=T)
+
+panelcontrols$Total_Expenditure_1000 <- as.double(panelcontrols$Total_Expenditure_1000)
+names(panelcontrols)[names(panelcontrols)=="Total_Expenditure_1000"] <- "Local_Authority_Expenditure"
+
+
+#Create LA Spend per person
+panelcontrols$Local_Authority_Spend_per_pop <- panelcontrols$Local_Authority_Expenditure/panelcontrols$Est_Population
+
+
+panelcontrols2 <- panelcontrols[c(2,4,5,6,7,8,9,10,11,12)]
+
+panelcontrols2 <- aggregate(panelcontrols2, by=list(panelcontrols2$ccg19cd,panelcontrols2$year), FUN=mean, na.rm=TRUE)
+
+panelcontrols2 <- panelcontrols2[-c(3,4)]
+
+
+names(panelcontrols2)[names(panelcontrols2)=="Group.1"] <- "ccg19cd"
+names(panelcontrols2)[names(panelcontrols2)=="Group.2"] <- "year"
+
+
+
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, panelcontrols2, by=c("ccg19cd", "year"), all.x = T)
+
+
+#add yearly CCG population estimates
+
+ccgpop12 <- read_csv("Data/ccgpop12.csv")
+ccgpop13 <- read_csv("Data/ccgpop13.csv")
+ccgpop14 <- read_csv("Data/ccgpop14.csv")
+ccgpop15 <- read_csv("Data/ccgpop15.csv")
+ccgpop16 <- read_csv("Data/ccgpop16.csv")
+ccgpop17 <- read_csv("Data/ccgpop17.csv")
+ccgpop18 <- read_csv("Data/ccgpop18.csv")
+ccgpop19 <- read_csv("Data/ccgpop19.csv")
+
+ccgpop12$year <- 2012
+ccgpop13$year <- 2013
+ccgpop14$year <- 2014
+ccgpop15$year <- 2015
+ccgpop16$year <- 2016
+ccgpop17$year <- 2017
+ccgpop18$year <- 2018
+ccgpop19$year <- 2019
+
+ccgpop <- rbind(ccgpop12, ccgpop13, ccgpop14, ccgpop15, ccgpop16, ccgpop17, ccgpop18, ccgpop19)
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, ccgpop, by=c("ccg19cd", "year"), all.x = T)
+
+MyAnnualDataCCG$ccgspenmills <- MyAnnualDataCCG$Total_Procurement_Spend/1000000
+
+table_data <- as.data.frame(MyAnnualDataCCG) %>% select(Treatable_Mortality_Rate, Private_Sector_Procurement_Spend,ccgspenmills, Local_Authority_Spend_per_pop,Claimant_percent, CCGpop ,Unemployment_percent ,BAME_percent,Qual_lvl4_percent ,GDHI_per_person)
+
+names(table_data)[names(table_data)=="Treatable_Mortality_Rate"] <- "Treatable Mortality Rate"
+names(table_data)[names(table_data)=="Private_Sector_Procurement_Spend"] <- "Outsourcing (%)"
+names(table_data)[names(table_data)=="Local_Authority_Spend_per_pop"] <- "Local Authority Spend (per Capita)"
+names(table_data)[names(table_data)=="Claimant_percent"] <- "Claimant Rate"
+names(table_data)[names(table_data)=="CCGpop"] <- "Population size"
+names(table_data)[names(table_data)=="Unemployment_percent"] <- "Unemployment Rate"
+names(table_data)[names(table_data)=="BAME_percent"] <- "Ethnic Minority (%)"
+names(table_data)[names(table_data)=="Qual_lvl4_percent"] <- "Degree Education (%)"
+names(table_data)[names(table_data)=="GDHI_per_person"] <- "Average Disposable H.hold Income"
+names(table_data)[names(table_data)=="ccgspenmills"] <- "Total CCG Spend (£Ms)"
+
+descriptivestats <- stat.desc(table_data, basic = F)
+
+  t_descriptivestats <- as.data.frame(t(descriptivestats))
+
+# get row and colnames in order
+  
+  # t_descriptivestats <- t_descriptivestats[setNames(t_descriptivestats, c("median", "Mean", "SE.mean", "CI.mean", "var", "SD", "coef.var" ))]
+
+#  colnames(t_descriptivestats) <- c("median", "Mean", "SE.mean", "CI.mean", "var", "SD", "coef.var" )
+ # rownames(t_descriptivestats) <- colnames(descriptivestats)
+  
+#   variable <- as.character((colnames(descriptivestats)))
+# 
+# t_descriptivestats$Variable <- variable    
+  
+  t_descriptivestats$Source <- c("ONS", "NHS Spend", "NHS Spend", "MHCLG (RSX)", "ONS (Claimant Count)", "ONS", "ONS (APS)", "ONS (APS)", "ONS (APS)", "ONS (GDHI)")
+  
+  # try <-    
+      knitr::kable(t_descriptivestats[c(2,6,8)],
+      format = "latex", # default
+      digits = 2,        # specify decimal places
+      caption = "Study Variables",
+      col.names = c("Mean","SD","Source"),
+      row.names = T,
+       # align = c("c","c","c","r")
+      # padding = 2     # inner spacing
+      )  
+
+
+  # writeLines(try, 'table1.tex')
+
+  
+```
+
+## Statistical Analysis
+
+We ran fixed effects and first differences regression models on the association between outsourcing and treatable mortality, these models will control for all time invariant confounders at the regional level. We also ran our fixed effects model using covariate-balancing with propensity scores based on treatable mortality rates at the beginning of the time-series and the total number of General Practitioners in each CCG. Covariate balancing is an advanced matching method which can weight values to balance the model, accounting for differences in observations according to their value of a continuous treatment variable, in this case for-profit outsourcing. These analyses are all reported using cluster-robust standard errors. Finally, we conducted a multi-level random intercepts model, clustering local-authority mortality rates within their geographically overlapping CCGs allowing the intercept to vary for each cluster to see whether CCG outsourcing significantly explains mortality rates in their relative Local Authorities.
+
+We also conduct analysis with an two alternative response variables. Firstly we run a fixed effects regression assessing the association between outsourcing and raw numbers of treatable deaths. Using the average marginal effects and fitted values from this regression, we predict how many extra deaths are attributable to increases in outsourcing since 2013 and plot a trend line of mortality were outsourcing to have remained constant since 2013. To be sure that our results are finding relationship between outsourcing and quality of care services, rather than some other cause of health outcomes we also run our regressions on 'preventable mortality'- mortality due to causes which we would expect public health interventions to prevent and not necessarily treatable by the primary, acute or community health services funded by the CCGS (table s1 in supplementary material). 
+
+## Sensitivity Analysis
+
+Our analysis is run on novel data which has been produced using web-scraping and algorithmic matching of contracts published in nonuniform formats. Despite many data verification checks, it is probable that a small amount of error exists in our outsourcing observations. To check whether potential error in the contract data influences our inferences, we synthetically replicate the effect of error on our findings. By running the regression results 50,000 times, each time multiplying the outsourcing values by random numbers we simulate how random error may impact the studies findings. 
+
+To account for potential bias in the main result from the choice of covariates in the model, we present a specification curve in the supplementary materials which is combined with the random error loops (figure s2). This is what we consider to represent the entire reasonable bounds of the observed effect size between outsourcing and treatable mortality for given values of error in the data and decided specifications of the model. Finally, we sequentially dropped each CCG from our fixed effects model to test whether any individual CCG is driving a significant amount of the average effect size (supplementary material, figure s3).
+
+We used `r cite_r("r-references.bib")` for all our analyses. This paper is produced in its entirety in RMarkdown, the data files and code that produce this research are available at https://github.com/BenGoodair/CCG-Outsourcing.
+
+# Results
+
+## Levels of for-profit outsorcing since 2013
+
+It is openly debated as to whether the outsourcing of NHS contracts to private sector providers has increased since the introduction of the 2012 Health and Social Care Act, with many claiming that there is not enough granular data to know the changes in outsourcing [@RN119; @RN120]. Figure 1 displays the changes in outsourcing since the beginning of our data in April 2013. The figure uses a 365-day rolling average of total commissioning expenditure that is received by for-profit companies. Overall levels of outsourcing to PFP providers has consistently increased since 2013, rising to over 6% of total spend in England by 2020.
+
+
+```{r, echo=FALSE,out.width="95%" }
+#download data
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+
+myDataCCG <- read.csv("Data/payments_ccg_final.csv")
+
+#format date variable
+myDataCCG$date <- as.Date(myDataCCG$date, format =  "%Y-%m-%d")
+
+#remove observations before April 2013
+
+myDataCCG <- myDataCCG[which(myDataCCG$date>="2013-04-01"),]
+
+
+#identify private sector companies - 4 possible conditions: matched with companies house and has no charities registration number. Has a companies number and no charities registration number. has a company category and no charities registration number. Has a company number, and was placed as no match after my manual check. Treat numbers as double to induce NAs
+
+myDataCCG$CompanyCategory[myDataCCG$CompanyCategory==""] <- NA 
+
+#Attach SIC code
+SIC <- read_csv("Data/BasicCompanyDataAsOneFile-2020-03-01.csv")
+
+####Keep expenditures only####
+#myDataCCG <- myDataCCG[which(myDataCCG$amount>0),]
+#myDataTrust <- myDataTrust[which(myDataTrust$amount>0),]
+
+###Pick SIC Codes and Address###
+SIC <- SIC[c(1,2,7,8,9,10,27,28,29,30) ]
+
+myDataCCG <- merge(myDataCCG, SIC, by= "CompanyNumber", all.x=TRUE)
+####retrieve numeric sic codes from the data####
+
+myDataCCG$sic <- as.character(regmatches(myDataCCG$SICCode.SicText_1, gregexpr("[[:digit:]]+", myDataCCG$SICCode.SicText_1)))
+####reducing sic digits to divisions and groups####
+myDataCCG$sic2dig <- substr(myDataCCG$sic, start = 1, stop = 2)
+myDataCCG$sic3dig <- substr(myDataCCG$sic, start = 1, stop = 3)
+
+myDataCCG$sic2dig <- as.double(myDataCCG$sic2dig)
+myDataCCG$sic3dig <- as.double(myDataCCG$sic3dig)
+myDataCCG$sic <- as.double(myDataCCG$sic)
+
+myDataCCG$sic2dig[is.na(myDataCCG$sic2dig)] <- 0
+myDataCCG$sic3dig[is.na(myDataCCG$sic3dig)] <- 0
+myDataCCG$sic[is.na(myDataCCG$sic)] <- 0
+
+
+####isolate industries of interest####
+
+myDataCCG <- myDataCCG %>% mutate(ResidentialCare = ifelse(myDataCCG$sic2dig=="87", 1,0))
+myDataCCG <- myDataCCG %>% mutate(HealthServices = ifelse(myDataCCG$sic2dig=="86", 1,0))
+myDataCCG <- myDataCCG %>% mutate(ManagementConsultancy = ifelse(myDataCCG$sic2dig=="70", 1,0))
+myDataCCG <- myDataCCG %>% mutate(BusinessSupport = ifelse(myDataCCG$sic2dig=="82", 1,0))
+myDataCCG <- myDataCCG %>% mutate(SocialWork = ifelse(myDataCCG$sic2dig=="88", 1,0))
+myDataCCG <- myDataCCG %>% mutate(RealEstate = ifelse(myDataCCG$sic2dig=="68", 1,0))
+myDataCCG <- myDataCCG %>% mutate(PublicAdministration = ifelse(myDataCCG$sic2dig=="84", 1,0))
+myDataCCG <- myDataCCG %>% mutate(PublicAdministration = ifelse(myDataCCG$sic2dig=="84", 1,0))
+myDataCCG <- myDataCCG %>% mutate(ComputingServices = ifelse(myDataCCG$sic2dig=="62", 1,0))
+myDataCCG <- myDataCCG %>% mutate(LegalAccounting = ifelse(myDataCCG$sic2dig=="69", 1,0))
+myDataCCG <- myDataCCG %>% mutate(Transport = ifelse(myDataCCG$sic2dig=="49", 1,0))
+
+myDataCCG <- myDataCCG %>% mutate(PrivateSector = ifelse((myDataCCG$match_type=="Companies House"&is.na(as.double(myDataCCG$CharityRegNo)))|(!is.na(as.double(myDataCCG$CompanyNumber))& is.na(as.double(myDataCCG$CharityRegNo)))| (!is.na(myDataCCG$CompanyCategory)&is.na(as.double(myDataCCG$CharityRegNo)))|(myDataCCG$audit_type=="3"&myDataCCG$match_type=="No Match"&!is.na(as.double(myDataCCG$CompanyNumber))),1,0))
+
+#add arbitrary group variable for plotting purposes
+myDataCCG$group <- 1
+myDataCCG$group <- factor(myDataCCG$group)
+
+#separare private and total amounts
+myDataCCGprivate <- myDataCCG[which(myDataCCG$PrivateSector==1),]
+myDataCCGhealth <- myDataCCG[which(myDataCCG$HealthServices==1),]
+myDataCCGresidential <- myDataCCG[which(myDataCCG$ResidentialCare==1),]
+myDataCCGsocialwork <- myDataCCG[which(myDataCCG$SocialWork==1),]
+myDataCCGbusinesssup <- myDataCCG[which(myDataCCG$BusinessSupport==1),]
+myDataCCGlegal <- myDataCCG[which(myDataCCG$LegalAccounting==1),]
+myDataCCGtransport <- myDataCCG[which(myDataCCG$Transport==1),]
+myDataCCGcomputing <- myDataCCG[which(myDataCCG$ComputingServices==1),]
+myDataCCGmanagement <- myDataCCG[which(myDataCCG$ManagementConsultancy==1),]
+myDataCCGpublicad <- myDataCCG[which(myDataCCG$PublicAdministration==1),]
+myDataCCGrealestate <- myDataCCG[which(myDataCCG$RealEstate==1),]
+myDataCCGall <- myDataCCG
+
+#select date and amount variables
+myDataCCGprivate <- myDataCCGprivate[c(3,8)]
+myDataCCGrealestate <- myDataCCGrealestate[c(3,8)]
+myDataCCGhealth <- myDataCCGhealth[c(3,8)]
+myDataCCGsocialwork <- myDataCCGsocialwork[c(3,8)]
+myDataCCGresidential <- myDataCCGresidential[c(3,8)]
+myDataCCGtransport <- myDataCCGtransport[c(3,8)]
+myDataCCGbusinesssup <- myDataCCGbusinesssup[c(3,8)]
+myDataCCGmanagement <- myDataCCGmanagement[c(3,8)]
+myDataCCGcomputing <- myDataCCGcomputing[c(3,8)]
+myDataCCGlegal <- myDataCCGlegal[c(3,8)]
+myDataCCGpublicad <- myDataCCGpublicad[c(3,8)]
+myDataCCGall <- myDataCCGall[c(3,8)]
+
+#sum amount spent on each day
+myDataCCGprivate <- aggregate(myDataCCGprivate[-1], myDataCCGprivate["date"], sum)
+myDataCCGhealth <- aggregate(myDataCCGhealth[-1], myDataCCGhealth["date"], sum)
+myDataCCGtransport <- aggregate(myDataCCGtransport[-1], myDataCCGtransport["date"], sum)
+myDataCCGlegal <- aggregate(myDataCCGlegal[-1], myDataCCGlegal["date"], sum)
+myDataCCGsocialwork <- aggregate(myDataCCGsocialwork[-1], myDataCCGsocialwork["date"], sum)
+myDataCCGbusinesssup <- aggregate(myDataCCGbusinesssup[-1], myDataCCGbusinesssup["date"], sum)
+myDataCCGmanagement <- aggregate(myDataCCGmanagement[-1], myDataCCGmanagement["date"], sum)
+myDataCCGpublicad <- aggregate(myDataCCGpublicad[-1], myDataCCGpublicad["date"], sum)
+myDataCCGresidential <- aggregate(myDataCCGresidential[-1], myDataCCGresidential["date"], sum)
+myDataCCGcomputing <- aggregate(myDataCCGcomputing[-1], myDataCCGcomputing["date"], sum)
+myDataCCGrealestate <- aggregate(myDataCCGrealestate[-1], myDataCCGrealestate["date"], sum)
+myDataCCGall <- aggregate(myDataCCGall[-1], myDataCCGall["date"], sum)
+
+#order by date
+myDataCCGprivate <- myDataCCGprivate[order(myDataCCGprivate$date),]
+myDataCCGhealth <- myDataCCGhealth[order(myDataCCGhealth$date),]
+myDataCCGresidential <- myDataCCGresidential[order(myDataCCGresidential$date),]
+myDataCCGsocialwork <- myDataCCGsocialwork[order(myDataCCGsocialwork$date),]
+myDataCCGpublicad <- myDataCCGpublicad[order(myDataCCGpublicad$date),]
+myDataCCGtransport <- myDataCCGtransport[order(myDataCCGtransport$date),]
+myDataCCGcomputing <- myDataCCGcomputing[order(myDataCCGcomputing$date),]
+myDataCCGbusinesssup <- myDataCCGbusinesssup[order(myDataCCGbusinesssup$date),]
+myDataCCGmanagement <- myDataCCGmanagement[order(myDataCCGmanagement$date),]
+myDataCCGlegal <- myDataCCGlegal[order(myDataCCGlegal$date),]
+myDataCCGrealestate <- myDataCCGrealestate[order(myDataCCGrealestate$date),]
+myDataCCGall <- myDataCCGall[order(myDataCCGall$date),]
+
+#create rolling sum variables
+myDataCCGprivate <- myDataCCGprivate %>% mutate(
+  cum_rolling_365_private = sum_run(
+    x = myDataCCGprivate$amount, 
+    k = 365, 
+    idx = myDataCCGprivate$date)
+)
+
+myDataCCGhealth <- myDataCCGhealth %>% mutate(
+  cum_rolling_365_health = sum_run(
+    x = myDataCCGhealth$amount, 
+    k = 365, 
+    idx = myDataCCGhealth$date)
+)
+
+myDataCCGresidential <- myDataCCGresidential %>% mutate(
+  cum_rolling_365_residential = sum_run(
+    x = myDataCCGresidential$amount, 
+    k = 365, 
+    idx = myDataCCGresidential$date)
+)
+
+myDataCCGsocialwork <- myDataCCGsocialwork %>% mutate(
+  cum_rolling_365_socialwork = sum_run(
+    x = myDataCCGsocialwork$amount, 
+    k = 365, 
+    idx = myDataCCGsocialwork$date)
+)
+
+myDataCCGlegal <- myDataCCGlegal %>% mutate(
+  cum_rolling_365_legal = sum_run(
+    x = myDataCCGlegal$amount, 
+    k = 365, 
+    idx = myDataCCGlegal$date)
+)
+
+myDataCCGpublicad <- myDataCCGpublicad %>% mutate(
+  cum_rolling_365_pubad = sum_run(
+    x = myDataCCGpublicad$amount, 
+    k = 365, 
+    idx = myDataCCGpublicad$date)
+)
+
+myDataCCGtransport <- myDataCCGtransport %>% mutate(
+  cum_rolling_365_transport = sum_run(
+    x = myDataCCGtransport$amount, 
+    k = 365, 
+    idx = myDataCCGtransport$date)
+)
+
+myDataCCGbusinesssup <- myDataCCGbusinesssup %>% mutate(
+  cum_rolling_365_bussup = sum_run(
+    x = myDataCCGbusinesssup$amount, 
+    k = 365, 
+    idx = myDataCCGbusinesssup$date)
+)
+
+myDataCCGmanagement <- myDataCCGmanagement %>% mutate(
+  cum_rolling_365_management = sum_run(
+    x = myDataCCGmanagement$amount, 
+    k = 365, 
+    idx = myDataCCGmanagement$date)
+)
+
+myDataCCGcomputing <- myDataCCGcomputing %>% mutate(
+  cum_rolling_365_computing = sum_run(
+    x = myDataCCGcomputing$amount, 
+    k = 365, 
+    idx = myDataCCGcomputing$date)
+)
+
+myDataCCGrealestate <- myDataCCGrealestate %>% mutate(
+  cum_rolling_365_realestate = sum_run(
+    x = myDataCCGrealestate$amount, 
+    k = 365, 
+    idx = myDataCCGrealestate$date)
+)
+
+myDataCCGall <- myDataCCGall %>% mutate(
+  cum_rolling_365_all = sum_run(
+    x = myDataCCGall$amount, 
+    k = 365, 
+    idx = myDataCCGall$date)
+)
+
+#combine datasets
+myDataCCGrolling <- merge(myDataCCGall, myDataCCGprivate, by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGhealth[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGpublicad[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGrealestate[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGcomputing[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGmanagement[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGbusinesssup[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGresidential[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGsocialwork[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGlegal[c(1,3)], by="date",all=T)
+myDataCCGrolling <- merge(myDataCCGrolling, myDataCCGtransport[c(1,3)], by="date",all=T)
+
+#replace NAs with previous cumulative spends
+
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_pubad <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_realestate <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_computing <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_management <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_bussup <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_socialwork <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_residential <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_legal <-0
+myDataCCGrolling[which(myDataCCGrolling$date=="2013-04-01"),]$cum_rolling_365_transport <-0
+
+myDataCCGrolling$cum_rolling_365_private2 <- na.locf(myDataCCGrolling$cum_rolling_365_private)
+myDataCCGrolling$cum_rolling_365_pubad2 <- na.locf(myDataCCGrolling$cum_rolling_365_pubad)
+myDataCCGrolling$cum_rolling_365_computing2 <- na.locf(myDataCCGrolling$cum_rolling_365_computing)
+myDataCCGrolling$cum_rolling_365_legal2 <- na.locf(myDataCCGrolling$cum_rolling_365_legal)
+myDataCCGrolling$cum_rolling_365_management2 <- na.locf(myDataCCGrolling$cum_rolling_365_management)
+myDataCCGrolling$cum_rolling_365_realestate2 <- na.locf(myDataCCGrolling$cum_rolling_365_realestate)
+myDataCCGrolling$cum_rolling_365_transport2 <- na.locf(myDataCCGrolling$cum_rolling_365_transport)
+myDataCCGrolling$cum_rolling_365_health2 <- na.locf(myDataCCGrolling$cum_rolling_365_health)
+myDataCCGrolling$cum_rolling_365_bussup2 <- na.locf(myDataCCGrolling$cum_rolling_365_bussup)
+myDataCCGrolling$cum_rolling_365_residential2 <- na.locf(myDataCCGrolling$cum_rolling_365_residential)
+myDataCCGrolling$cum_rolling_365_socialwork2 <- na.locf(myDataCCGrolling$cum_rolling_365_socialwork)
+
+#work out private sector spend as a % of total spend in any given 365 day period
+myDataCCGrolling$Rolling_Percent <- myDataCCGrolling$cum_rolling_365_private2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_health2 <- myDataCCGrolling$cum_rolling_365_health2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_pubad2 <- myDataCCGrolling$cum_rolling_365_pubad2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_realestate2 <- myDataCCGrolling$cum_rolling_365_realestate2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_computing2 <- myDataCCGrolling$cum_rolling_365_computing2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_management2 <- myDataCCGrolling$cum_rolling_365_management2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_bussup2 <- myDataCCGrolling$cum_rolling_365_bussup2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_residential2 <- myDataCCGrolling$cum_rolling_365_residential2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_socialwork2 <- myDataCCGrolling$cum_rolling_365_socialwork2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_legal2 <- myDataCCGrolling$cum_rolling_365_legal2/myDataCCGrolling$cum_rolling_365_all*100
+
+myDataCCGrolling$cum_rolling_365_transport2 <- myDataCCGrolling$cum_rolling_365_transport2/myDataCCGrolling$cum_rolling_365_all*100
+
+
+#sparkplots
+
+one <- myDataCCGrolling[c("date", "cum_rolling_365_health2")]
+two <- myDataCCGrolling[c("date", "cum_rolling_365_legal2")]
+three <- myDataCCGrolling[c("date", "cum_rolling_365_socialwork2")]
+four <- myDataCCGrolling[c("date", "cum_rolling_365_residential2")]
+five <- myDataCCGrolling[c("date", "cum_rolling_365_bussup2")]
+six <- myDataCCGrolling[c("date", "cum_rolling_365_management2")]
+seven <- myDataCCGrolling[c("date", "cum_rolling_365_computing2")]
+eight <- myDataCCGrolling[c("date", "cum_rolling_365_realestate2")]
+nine <- myDataCCGrolling[c("date", "cum_rolling_365_pubad2")]
+ten <- myDataCCGrolling[c("date", "cum_rolling_365_transport2")]
+
+names(one)[names(one)=="cum_rolling_365_health2"] <- "rolling_per"
+names(two)[names(two)=="cum_rolling_365_legal2"] <- "rolling_per"
+names(three)[names(three)=="cum_rolling_365_socialwork2"] <- "rolling_per"
+names(four)[names(four)=="cum_rolling_365_residential2"] <- "rolling_per"
+names(five)[names(five)=="cum_rolling_365_bussup2"] <- "rolling_per"
+names(six)[names(six)=="cum_rolling_365_management2"] <- "rolling_per"
+names(seven)[names(seven)=="cum_rolling_365_computing2"] <- "rolling_per"
+names(eight)[names(eight)=="cum_rolling_365_realestate2"] <- "rolling_per"
+names(nine)[names(nine)=="cum_rolling_365_pubad2"] <- "rolling_per"
+names(ten)[names(ten)=="cum_rolling_365_transport2"] <- "rolling_per"
+
+one$rolling_per <- (one$rolling_per-one[which(one$date=="2014-04-05"),]$rolling_per)/one[which(one$date=="2014-04-05"),]$rolling_per
+two$rolling_per <- (two$rolling_per-two[which(two$date=="2014-04-05"),]$rolling_per)/two[which(two$date=="2014-04-05"),]$rolling_per
+three$rolling_per <- (three$rolling_per-three[which(three$date=="2014-04-05"),]$rolling_per)/three[which(three$date=="2014-04-05"),]$rolling_per
+four$rolling_per <- (four$rolling_per-four[which(four$date=="2014-04-05"),]$rolling_per)/four[which(four$date=="2014-04-05"),]$rolling_per
+five$rolling_per <- (five$rolling_per-five[which(five$date=="2014-04-05"),]$rolling_per)/five[which(five$date=="2014-04-05"),]$rolling_per
+six$rolling_per <- (six$rolling_per-six[which(six$date=="2014-04-05"),]$rolling_per)/six[which(six$date=="2014-04-05"),]$rolling_per
+seven$rolling_per <- (seven$rolling_per-seven[which(seven$date=="2014-04-05"),]$rolling_per)/seven[which(seven$date=="2014-04-05"),]$rolling_per
+eight$rolling_per <- (eight$rolling_per-eight[which(eight$date=="2014-04-05"),]$rolling_per)/eight[which(eight$date=="2014-04-05"),]$rolling_per
+nine$rolling_per <- (nine$rolling_per-nine[which(nine$date=="2014-04-05"),]$rolling_per)/nine[which(nine$date=="2014-04-05"),]$rolling_per
+ten$rolling_per <- (ten$rolling_per-ten[which(ten$date=="2014-04-05"),]$rolling_per)/ten[which(ten$date=="2014-04-05"),]$rolling_per
+
+one$division <- "Healthcare\nServices"
+two$division <- "Legal\nand\nAccounting"
+three$division <- "Social\nWork"
+four$division <- "Residential\nCare"
+five$division <- "Business\nSupport"
+six$division <- "Management\nConsultancy"
+seven$division <- "It\nSupport"
+eight$division <- "Real\nEstate"
+nine$division <- "Public\nAdministration"
+ten$division <- "Transport"
+
+sparkplots <- rbind(one, two, three, four, five, six, seven, eight, nine, ten)
+
+loadfonts(device = "win")
+
+
+theme_Publication <- function(base_size=9, base_family="Helvetica") {
+      library(grid)
+      library(ggthemes)
+      (theme_foundation(base_size=base_size, base_family=base_family)
+       + theme(plot.title = element_text(size = rel(1.2), hjust = 0.5),
+               panel.background = element_rect(colour = NA),
+               plot.background = element_rect(colour = NA),
+               panel.border = element_rect(colour = NA),
+               axis.title = element_text(size = rel(1)),
+               axis.title.y = element_text(angle=90,vjust =2),
+               axis.title.x = element_text(vjust = -0.2),
+               axis.text = element_text(), 
+               axis.line = element_line(colour="black"),
+               axis.ticks = element_line(),
+               panel.grid.major = element_line(colour="#f0f0f0"),
+               panel.grid.minor = element_blank(),
+               legend.key = element_rect(colour = NA),
+               legend.position = "bottom",
+               legend.direction = "horizontal",
+               legend.key.size= unit(0.2, "cm"),
+               legend.margin = unit(0, "cm"),
+               legend.title = element_text(),
+               plot.margin=unit(c(10,5,5,5),"mm"),
+               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+               strip.text = element_text()
+          ))
+      
+}
+
+
+spark <- ggplot(sparkplots, aes(x=date, y=rolling_per*100))+
+  theme_Publication()+
+  geom_line()+
+  facet_wrap(~division,  ncol = 10)+
+  scale_y_continuous(limits = c(-100,500))+
+  scale_x_date(limits = as.Date(c("2014-04-05","2020-02-29")),  breaks = as.Date( c("2014-04-05","2020-02-29")), labels = c("2014", "2020"))+
+  labs(y="For-profit Outsourcing\n(% change)", x="")+
+  geom_hline(yintercept=0, linetype="dashed", colour = "grey")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.6), 
+        panel.spacing = unit(0.5, "lines"),
+        strip.text.x = element_text(size = 4),
+        text=element_text(size=7))
+
+  
+#Stacked plot
+
+a <- myDataCCGrolling[c("date","cum_rolling_365_health2")]
+myDataCCGrolling$Other <- myDataCCGrolling$Rolling_Percent-myDataCCGrolling$cum_rolling_365_health2
+b <- myDataCCGrolling[c("date","Other")]
+names(a)[names(a)=="cum_rolling_365_health2"] <- "rolled"
+
+names(b)[names(b)=="Other"] <- "rolled"
+a$provision <- "Healthcare Companies"
+b$provision <- "Other Companies"
+
+stacked <- rbind(a,b)
+
+stacked$`Provision type` <- factor(stacked$provision , levels=c("Other Companies", "Healthcare Companies") )
+cbPalette <- c( "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+#plot result
+plot1 <- ggplot(stacked, aes(x=date, y=rolled, fill=`Provision type`))+
+  geom_area()+
+  labs(x = "", y = "For-profit Outsourcing (%)")+
+  scale_x_date(limits = as.Date(c("2013-07-01","2020-02-29")))+
+  scale_y_continuous(limits = c(0,7.5))+theme_Publication()+
+  scale_fill_manual(values=cbPalette)+theme(text=element_text(size=7))
+  
+#warmingplot
+
+theme_strip <- theme_minimal()+
+  theme(axis.text.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        )
+
+library(RColorBrewer)
+col_strip <- brewer.pal(11, "RdBu")
+
+
+
+plotdata <- myDataCCG[c("date","amount","PrivateSector")]
+
+plotdata$month <- format(plotdata$date,"%m/%y")
+
+plotdataPriv <- plotdata[which(plotdata$PrivateSector==1),]
+names(plotdataPriv)[names(plotdataPriv)=="amount"] <- "private_spend"
+
+plotdata <- aggregate(. ~month, data=plotdata, sum)
+plotdataPriv <- aggregate(. ~month, data=plotdataPriv, sum)
+
+plotdata <- merge(plotdata[c(1,3)], plotdataPriv[c(1,3)], by="month", all=T)
+
+library(lubridate)
+plotdata$month <- as.character(plotdata$month)
+plotdata$month <- my(plotdata$month)
+
+plotdata$outsourcing <- plotdata$private_spend/plotdata$amount
+
+
+
+warmingstripes <- ggplot(plotdata,
+       aes(x = month, y = 1, fill = outsourcing*100))+
+  geom_tile()+
+  scale_x_date(limits = as.Date(c("2013-07-01","2020-02-29")))+
+  scale_y_continuous(expand = c(0, 0))+
+  scale_fill_gradientn(colors = rev(col_strip), name = "For-profit\nOutsourcing (%)")+
+  guides(fill = guide_colorbar(barwidth = 1))+
+  theme_strip+
+  labs(x="")+theme(text=element_text(size=7), legend.key.size = unit(0.4, "cm"))
+
+#mapplot
+
+
+
+
+mapdata <- myDataCCG[c("amount","PrivateSector", "dept")]
+
+
+mapdatap <- mapdata[which(mapdata$PrivateSector==1),]
+names(mapdatap)[names(mapdatap)=="amount"] <- "private_spend"
+
+mapdata <- aggregate(. ~dept, data=mapdata, sum)
+mapdatap <- aggregate(. ~dept, data=mapdatap, sum)
+
+mapdata <- merge(mapdata[c(1,2)], mapdatap[c(1,2)], by="dept", all=T)
+
+
+library(sp)
+library(maptools)
+library(sf)
+
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+ccgboundaries <- readShapeSpatial("ccg19shp")
+names(ccgboundaries)[names(ccgboundaries)=="CCG19CD"] <- "ccg19cd"
+
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+ccg_codes <- read_csv("Data/CCG_codes.csv")
+mapdata <- merge(mapdata, ccg_codes, by="dept")
+
+
+
+mapdata$outsourcing <- (mapdata$private_spend/mapdata$amount)*100
+
+
+
+privatemap <- merge(ccgboundaries,mapdata , by="ccg19cd", all.x=T)
+
+
+
+
+privatespatial <- st_as_sf(privatemap)
+
+#plot map
+theme_map <- function(...) {
+  theme_minimal() +
+    theme(
+      axis.line = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+  #    panel.background = element_rect(fill = "transparent"), # bg of the panel
+ #     plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+      panel.grid.major = element_blank(), # get rid of major grid
+      panel.grid.minor = element_blank(), # get rid of minor grid
+     # legend.background = element_rect(fill = "transparent", color=NA), # get rid of legend bg
+    #  legend.box.background = element_rect(fill = "transparent", color=NA),
+     # panel.border = element_blank(),legend.title=element_text(size=8), 
+    #  legend.text=element_text(size=7),legend.key.size = unit(0.3, "cm"),
+      ...
+    )
+}
+
+no_classes <- 6
+
+
+quantiles <- quantile(privatespatial$outsourcing, 
+                      probs = seq(0, 1, length.out = no_classes + 1), na.rm=T)
+
+# here I define custom labels (the default ones would be ugly)
+labels <- c()
+for(idx in 1:length(quantiles)){
+  labels <- c(labels, paste0(round(quantiles[idx], 2), 
+                             " - ", 
+                             round(quantiles[idx + 1], 2)))
+}
+# I need to remove the last label 
+# because that would be something like "66.62 - NA"
+labels <- labels[1:length(labels)-1]
+
+# here I actually create a new 
+# variable on the dataset with the quantiles
+privatespatial$outsourcing_quantiles <- cut(privatespatial$outsourcing, 
+                                     breaks = quantiles, 
+                                     labels = labels, 
+                                     include.lowest = T)
+
+
+library(RColorBrewer)
+private_map <- ggplot(data = privatespatial) +
+  geom_sf(aes(fill = outsourcing_quantiles), color = NA) +
+  theme_map()+
+  labs(x = NULL, 
+       y = NULL)+
+  scale_fill_brewer(
+    palette = "OrRd",
+    name = "For-profit Outsourcing\n(%, 2013-2020)", na.value="grey")+
+  theme(text=element_text(size=7), legend.key.size = unit(0.5, "cm"))
+
+
+
+library(cowplot)
+time <- cowplot::plot_grid(plot1, spark, ncol=1 ,labels="AUTO")
+map <- cowplot::plot_grid(time, private_map, align = "hv",ncol=2 ,labels=c("","C"))
+all <- cowplot::plot_grid(map, warmingstripes, align = "hv",ncol=1 ,labels=c("","D"), rel_heights = c(5,1))
+all
+
+#ggsave("figure_1_final.pdf", plot=all, width=10, height=7, dpi=1200)
+
+# pdf("figure_1_fuller.pdf", width = 10,height = 7) 
+# print(all)
+#  dev.off()
+  # library(tikzDevice)
+  #   tikz('Figure_1_allf.tex', width = 10, height=10)
+  # # # 
+  #   print(all) # you *have to* print the object you created
+  #   dev.off() # not device.off()
+ #   
+
+```
+
+## Outsourcing and Healthcare Quality
+
+Table 2 displays the main results from our statistical analysis assessing the relationship between outsourcing and mortality rates. Table 2 displays the results from a linear, two-way, fixed effects model (1), a first-differences model (2), a linear two-way fixed effects model with covariate balancing for the number of active GPs (3), and for treatable mortality rates at the beginning of the time-series (4), and a mixed effects model where outsourcing at the CCG level is regressed against correlating mortality rates at the Local Authority level (5). In models 1-4 the standard errors are clustered at a CCG-level using  small-sample bias reductions as suggested by Pustejovsky and Tipton [@RN126].
+
+In each model we find comparable effect sizes with statistically significant, positive associations between increases in outsourcing and increases in treatable mortality in the following year. The response variable is a log-transformation of treatable mortality meaning we interpret the result for model (1) as: an annual increase of one percentage point of outsourcing to the private sector is associated with an annual increase in treatable mortality of 0.40% or 0.30 deaths per 100,000 population (95% CI 0·15% to 0·64%; p= 0.001611) in the following year.
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+####Mixed-models data cleaning####
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+
+latreatmort <- read.csv("Data/latreatmort.csv")
+
+
+latreatmort <- melt(latreatmort,id =  c("LAD19CD"), variable.name = "threeyears")
+names(latreatmort)[names(latreatmort)=="value"] <- "Treatable_mortality_rate"
+
+lapreventmort <- read.csv("Data/lapreventmort.csv")
+names(lapreventmort)[names(lapreventmort) == "ï..LAD19CD"] <- "LAD19CD"
+
+lapreventmort <- melt(lapreventmort,id =  c("LAD19CD"), variable.name = "threeyears")
+names(lapreventmort)[names(lapreventmort)=="value"] <- "Preventable_mortality_rate"
+
+
+localauthority <-read_csv("Data/LSOAtoCCGtoLAD19.csv")
+
+localauthority <- localauthority[c(4,9, 10)]
+
+localauthority <- unique(localauthority)
+
+ladata <- merge(localauthority, latreatmort, by="LAD19CD", all.x=T)
+ladata <- merge(ladata, lapreventmort, by=c("LAD19CD", "threeyears"), all.x=T)
+
+ccg_codes <- read_csv("Data/CCG_codes.csv")
+
+threeyrspend <- merge(threeyrspend, ccg_codes, by="dept", all.x=TRUE)
+
+
+ladata <- merge(ladata, threeyrspend, by=c("ccg19cd", "threeyears"), all=T)
+
+ladata <- ladata %>% mutate(year = ifelse(ladata$threeyears=="X2009.2011", 2011, ifelse(ladata$threeyears=="X2010.2012", 2012, ifelse(ladata$threeyears=="X2011.2013", 2013, ifelse(ladata$threeyears=="X2012.2014", 2014, ifelse(ladata$threeyears=="X2013.2015", 2015, ifelse(ladata$threeyears=="X2014.2016", 2016, ifelse(ladata$threeyears=="X2015.2017", 2017, ifelse(ladata$threeyears=="X2016.2018", 2018, ifelse(ladata$threeyears=="X2017.2019", 2019, ifelse(ladata$threeyears=="X2018.2020", 2020,NA)))))))))))
+
+ladata$year <- as.Date(as.character(ladata$year), format = "%Y")
+ladata$year <- format(ladata$year,"%Y")
+
+
+larural <- read.csv("Data/laruralurban.csv")
+
+ladata <- merge(ladata, larural, by="LAD19CD", all.x=T)
+
+
+ladata$one <- 1
+counts <- aggregate(one ~ threeyears + ccg19cd, data = ladata, FUN = sum)
+
+counts$include <- 1
+
+
+counts <- counts[which(counts$one>2),]
+
+
+
+ladata2 <- merge(ladata, counts, by=c("ccg19cd", "threeyears"), all.x=T)
+ladata2 <- ladata2[which(ladata2$include==1),]
+
+
+count <- unique(ladata2$ccg19cd)
+
+
+#controls#
+
+ethnicitypanel <- read_csv("Data/ethnicitypanel.csv")
+educationpanel <- read_csv("Data/educationpanel.csv")
+unemploymentpanel <- read_csv("Data/unemployment.csv")
+claimantpanel <- read_csv("Data/claimantcounts.csv")
+poppanel <- read_csv("Data/population_panel.csv")
+pop2020 <- read_csv("Data/2020pop.csv")
+laspend2012 <- read_csv("Data/LAspend2012.csv")
+laspend2013 <- read_csv("Data/LAspend2014.csv")
+laspend2015 <- read_csv("Data/LAspend2015.csv")
+laspend2016 <- read_csv("Data/LAspend2016.csv")
+laspend2017 <- read_csv("Data/LAspend2017.csv")
+laspend2018 <- read_csv("Data/LAspend2018.csv")
+laspend2019 <- read_csv("Data/LAspend2019.csv")
+laspend2020 <- read_csv("Data/LAspend2020.csv")
+laspend2014 <- read_csv("Data/LAspend2014.csv")
+gdhisw <- read_csv("Data/gdhipersw.csv")
+gdhilon <- read_csv("Data/gdhiperlon.csv")
+gdhise <- read_csv("Data/gdhiperse.csv")
+gdhinw <- read_csv("Data/gdhipernw.csv")
+gdhiwm <- read_csv("Data/gdhiperwm.csv")
+gdhiem <- read_csv("Data/gdhiperem.csv")
+gdhiyh <- read_csv("Data/gdhiperyh.csv")
+gdhine <- read_csv("Data/gdhimillsne.csv")
+gdhiee <- read_csv("Data/gdhiperee.csv")
+
+gdhiee <- gdhiee[-c(12)]
+
+gdhi <- rbind(gdhiyh, gdhisw,gdhise,gdhine,gdhinw,gdhiem,gdhiwm,gdhilon, gdhiee )
+
+gdhi <- gdhi[-c(1,3)]
+names(gdhi)[names(gdhi)=="LAD code"] <- "LAD19CD"
+
+pop2020$year <- 2020
+laspend2012$year <- 2012
+laspend2013$year <- 2013
+laspend2015$year <- 2015
+laspend2016$year <- 2016
+laspend2017$year <- 2017
+laspend2018$year <- 2018
+laspend2019$year <- 2019
+laspend2020$year <- 2020
+laspend2014$year <- 2014
+
+laspend2012 <- laspend2012[c(2,4,5)]
+laspend2013 <- laspend2013[c(2,4,5)]
+laspend2014 <- laspend2014[c(2,4,5)]
+laspend2015 <- laspend2015[c(3,6,7)]
+laspend2016 <- laspend2016[c(3,5,6)]
+laspend2017 <- laspend2017[c(3,5,6)]
+laspend2018 <- laspend2018[c(3,5,6)]
+laspend2019 <- laspend2019[c(3,5,6)]
+laspend2020 <- laspend2020[c(3,5,6)]
+
+laspend <- rbind(laspend2012, laspend2013, laspend2014, laspend2015, laspend2016, laspend2017, laspend2018, laspend2019, laspend2020)
+
+poppanel <- melt(poppanel,id =  c("LAD19CD", "LAD19NM"), variable.name = "year")
+names(poppanel)[names(poppanel)=="value"] <- "Est_Population"
+
+gdhi <- melt(gdhi,id =  c("LAD19CD"), variable.name = "year")
+names(gdhi)[names(gdhi)=="value"] <- "GDHI_per_person"
+
+
+ethnicitypanel <- melt(ethnicitypanel,id =  "LAD19NM", variable.name = "year")
+names(ethnicitypanel)[names(ethnicitypanel)=="value"] <- "BAME_percent"
+
+educationpanel <- melt(educationpanel,id =  "LAD19NM", variable.name = "year")
+names(educationpanel)[names(educationpanel)=="value"] <- "Qual_lvl4_percent"
+
+unemploymentpanel <- melt(unemploymentpanel,id =  "LAD19NM", variable.name = "year")
+names(unemploymentpanel)[names(unemploymentpanel)=="value"] <- "Unemployment_percent"
+
+claimantpanel <- melt(claimantpanel,id =  "LAD19NM", variable.name = "year")
+names(claimantpanel)[names(claimantpanel)=="value"] <- "Claimant_percent"
+
+
+
+panelcontrols <- merge(localauthority, unemploymentpanel, by="LAD19NM", all.x=T)
+
+panelcontrols <- merge(panelcontrols, educationpanel, by=c("LAD19NM", "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, ethnicitypanel, by=c("LAD19NM", "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, poppanel, by=c("LAD19NM", "LAD19CD", "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, laspend, by=c("LAD19NM",  "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, claimantpanel, by=c("LAD19NM",  "year"), all.x=T)
+panelcontrols <- merge(panelcontrols, gdhi, by=c("LAD19CD",  "year"), all.x=T)
+
+panelcontrols$Total_Expenditure_1000 <- as.double(panelcontrols$Total_Expenditure_1000)
+names(panelcontrols)[names(panelcontrols)=="Total_Expenditure_1000"] <- "Local_Authority_Expenditure"
+
+
+
+#Create LA Spend per person
+panelcontrols$Local_Authority_Spend_per_pop <- panelcontrols$Local_Authority_Expenditure/panelcontrols$Est_Population
+
+
+
+panelcontrols2 <- panelcontrols[-c(4)]
+panelcontrols2 <- unique(panelcontrols2)
+
+panelcontrols1214 <- panelcontrols2[which(panelcontrols2$year=="2013"|panelcontrols2$year=="2014"|panelcontrols2$year=="2012"),]
+panelcontrols1214$threeyears <- "X2012.2014"  
+
+panelcontrols1315 <- panelcontrols2[which(panelcontrols2$year=="2013"|panelcontrols2$year=="2014"|panelcontrols2$year=="2015"),]
+panelcontrols1315$threeyears <- "X2013.2015"  
+
+panelcontrols1416 <- panelcontrols2[which(panelcontrols2$year=="2016"|panelcontrols2$year=="2014"|panelcontrols2$year=="2015"),]
+panelcontrols1416$threeyears <- "X2014.2016"  
+
+panelcontrols1517 <- panelcontrols2[which(panelcontrols2$year=="2016"|panelcontrols2$year=="2017"|panelcontrols2$year=="2015"),]
+panelcontrols1517$threeyears <- "X2015.2017"  
+
+panelcontrols1618 <- panelcontrols2[which(panelcontrols2$year=="2016"|panelcontrols2$year=="2017"|panelcontrols2$year=="2018"),]
+panelcontrols1618$threeyears <- "X2016.2018"  
+
+panelcontrols1719 <- panelcontrols2[which(panelcontrols2$year=="2017"|panelcontrols2$year=="2018"|panelcontrols2$year=="2019"),]
+panelcontrols1719$threeyears <- "X2017.2019"  
+
+panelcontrols1820 <- panelcontrols2[which(panelcontrols2$year=="2018"|panelcontrols2$year=="2019"|panelcontrols2$year=="2020"),]
+panelcontrols1820$threeyears <- "X2018.2020"  
+
+panelcontrols1214 <- panelcontrols1214[-c(2,3)]
+panelcontrols1315 <- panelcontrols1315[-c(2,3)]
+panelcontrols1416 <- panelcontrols1416[-c(2,3)]
+panelcontrols1517 <- panelcontrols1517[-c(2,3)]
+panelcontrols1618 <- panelcontrols1618[-c(2,3)]
+panelcontrols1719 <- panelcontrols1719[-c(2,3)]
+panelcontrols1820 <- panelcontrols1820[-c(2,3)]
+
+panelcontrols1214 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1214, mean)
+panelcontrols1315 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1315, mean)
+panelcontrols1416 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1416, mean)
+panelcontrols1517 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1517, mean)
+panelcontrols1618 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1618, mean)
+panelcontrols1719 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1719, mean)
+panelcontrols1820 <- aggregate(. ~LAD19CD+threeyears, data=panelcontrols1820, mean)
+
+panelcontrolstotal <- rbind(panelcontrols1315,panelcontrols1416,panelcontrols1517,panelcontrols1618,panelcontrols1719,panelcontrols1820,panelcontrols1214 )
+
+ladata2 <- merge(ladata2, panelcontrolstotal, by=c("LAD19CD", "threeyears"), all.x=T)
+
+MyAnnualDataCCG <- pdata.frame(MyAnnualDataCCG, index = c("dept", "year"))
+
+#write.csv(MyAnnualDataCCG, "Data/MyAnnualDataCCGJuly2021finally.csv")
+
+rm(list=setdiff(ls(), c("MyAnnualDataCCG", "myDataCCG", "MyPanelDataCCG", "ladata2")))
+
+
+#GP number data#
+
+doctors <- read.csv("Data/DoctorList.csv")
+GPs <- read.csv("Data/GGPbyCCG.csv")
+
+
+
+GPsperCCG <-  GPs %>% 
+  group_by(CCG19CD) %>% 
+  count_()
+
+names(GPsperCCG)[names(GPsperCCG)=="CCG19CD"] <- "ccg19cd"
+names(GPsperCCG)[names(GPsperCCG)=="n"] <- "number_of_practices"
+
+
+doctors <- doctors[!complete.cases(doctors$end),]
+
+doctorspergp <- doctors %>% 
+  group_by(GP_code) %>% 
+  count_()
+
+
+
+
+
+# names(doctorspergp)[names(doctorspergp)=="x"] <- "GP_code"
+names(doctorspergp)[names(doctorspergp)=="n"] <- "number_of_doctors"
+
+
+
+GPs <- merge(GPs, doctorspergp, by="GP_code", all.x=T)
+
+Docsperccg <- GPs[c(4,5)]
+
+
+Docsperccg <- aggregate(. ~CCG19CD, data=Docsperccg, sum)
+names(Docsperccg)[names(Docsperccg)=="CCG19CD"] <- "ccg19cd"
+
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, Docsperccg, by="ccg19cd", all.x=T)
+
+completegpdata <- MyAnnualDataCCG[complete.cases(MyAnnualDataCCG$number_of_doctors),]
+completegpdata <- completegpdata[complete.cases(completegpdata$Treatable_Mortality_Rate),]
+
+Mortality_2013 <- read_csv("Data/treatable_mortality.csv") 
+
+Mortality_2013 <- Mortality_2013[c(1,5)]
+
+names(Mortality_2013)[names(Mortality_2013)=="2013"] <- "Treatable_Mortality_2013"
+
+MyAnnualDataCCG <- merge(MyAnnualDataCCG, Mortality_2013, by="ccg19cd", all.x=T)
+
+MyAnnualDataCCG <- pdata.frame(MyAnnualDataCCG, index = c("dept", "year"))
+MyAnnualDataCCG$Lagged_Private_Procurement <-lag(MyAnnualDataCCG$Private_Sector_Procurement_Spend, k=1)
+
+
+MyAnnualDataCCG$total_spend_10millions <- MyAnnualDataCCG$Total_Procurement_Spend/10000000
+
+MyAnnualDataCCG$Lagged_Total_Spend <-lag(MyAnnualDataCCG$total_spend_10millions, k=1)
+MyAnnualDataCCG$Lagged_Treatablemort<-lag(MyAnnualDataCCG$Treatable_Mortality_Rate, k=1)
+MyAnnualDataCCG$Lagged_Private_Procurement <-lag(MyAnnualDataCCG$Private_Sector_Procurement_Spend, k=1)
+
+
+
+MyAnnualDataCCG$Private_Sector_Procurement_Spendten <- MyAnnualDataCCG$Private_Sector_Procurement_Spend/10
+MyAnnualDataCCG$Lagged_Private_Procurementten <-lag(MyAnnualDataCCG$Private_Sector_Procurement_Spendten, k=1)
+MyAnnualDataCCG$Treatable_Mortality_Rate_FD <- log(MyAnnualDataCCG$Treatable_Mortality_Rate)-lag(log(MyAnnualDataCCG$Treatable_Mortality_Rate), k=1)
+MyAnnualDataCCG$Private_Sector_Procurement_Spendten_FD <- MyAnnualDataCCG$Private_Sector_Procurement_Spendten-lag(MyAnnualDataCCG$Private_Sector_Procurement_Spendten, k=1)
+MyAnnualDataCCG$Private_Sector_Procurement_Spend_FD <- MyAnnualDataCCG$Private_Sector_Procurement_Spend-lag(MyAnnualDataCCG$Private_Sector_Procurement_Spend, k=1)
+MyAnnualDataCCG$Local_Authority_Spend_per_pop_FD <- MyAnnualDataCCG$Local_Authority_Spend_per_pop-lag(MyAnnualDataCCG$Local_Authority_Spend_per_pop, k=1)
+MyAnnualDataCCG$Claimant_percent_FD <- MyAnnualDataCCG$Claimant_percent-lag(MyAnnualDataCCG$Claimant_percent, k=1)
+MyAnnualDataCCG$CCGpop_FD <- log(MyAnnualDataCCG$CCGpop)-lag(log(MyAnnualDataCCG$CCGpop), k=1)
+MyAnnualDataCCG$Unemployment_percent_FD <- MyAnnualDataCCG$Unemployment_percent-lag(MyAnnualDataCCG$Unemployment_percent, k=1)
+MyAnnualDataCCG$BAME_percent_FD <- MyAnnualDataCCG$BAME_percent-lag(MyAnnualDataCCG$BAME_percent, k=1)
+MyAnnualDataCCG$Qual_lvl4_percent_FD <- MyAnnualDataCCG$Qual_lvl4_percent-lag(MyAnnualDataCCG$Qual_lvl4_percent, k=1)
+MyAnnualDataCCG$total_spend_10millions_FD <- MyAnnualDataCCG$total_spend_10millions-lag(MyAnnualDataCCG$total_spend_10millions, k=1)
+MyAnnualDataCCG$GDHI_FD <- log(MyAnnualDataCCG$GDHI_per_person)-lag(log(MyAnnualDataCCG$GDHI_per_person), k=1)
+
+MyAnnualDataCCG$Private_Sector_Procurement_Spendten_FD_lagged <- lag(MyAnnualDataCCG$Private_Sector_Procurement_Spendten_FD, k=1)
+MyAnnualDataCCG$Local_Authority_Spend_per_pop_FD_lagged <- lag(MyAnnualDataCCG$Local_Authority_Spend_per_pop_FD, k=1)
+MyAnnualDataCCG$total_spend_10millions_FD_lagged <- lag(MyAnnualDataCCG$total_spend_10millions_FD, k=1)
+MyAnnualDataCCG$GDHI_FD_lagged <- lag(MyAnnualDataCCG$GDHI_FD, k=1)
+MyAnnualDataCCG$Private_Sector_Procurement_Spend_FD_lagged <- lag(MyAnnualDataCCG$Private_Sector_Procurement_Spend_FD, k=1)
+
+ladata_lagged <- ladata2[c(1,8,9, 11,23)]
+
+ladata_lagged$year <- as.character(as.double(ladata_lagged$year)+1)
+
+names(ladata_lagged)[names(ladata_lagged)=="Private_Sector_Procurement_Spend"] <- "Lagged_Private_Procurement"
+names(ladata_lagged)[names(ladata_lagged)=="Local_Authority_Spend_per_pop"] <- "Lagged_LA_spend"
+names(ladata_lagged)[names(ladata_lagged)=="Total_Procurement_Spend"] <- "Lagged_totalCCG_spend"
+ladata2 <- merge(ladata2, ladata_lagged, by= c("LAD19CD", "year"))
+
+ladata2$Lagged_Private_Procurement_over_10 <- (ladata2$Private_Sector_Procurement_Spend/10)
+
+####Final results to be presented####
+
+MyAnnualDataCCG$Private_Sector_Procurement_Spendten <- MyAnnualDataCCG$Private_Sector_Procurement_Spend/10
+MyAnnualDataCCG$Lagged_Private_Procurementten <-lag(MyAnnualDataCCG$Private_Sector_Procurement_Spendten, k=1)
+MyAnnualDataCCG$lagged_la_spend <-lag(MyAnnualDataCCG$Local_Authority_Expenditure, k=1)
+
+
+
+MyAnnualDataCCG$total_spend_10millions <- MyAnnualDataCCG$Total_Procurement_Spend/10000000
+
+
+
+FinalFD <- lm(Treatable_Mortality_Rate_FD~Private_Sector_Procurement_Spend_FD_lagged+Local_Authority_Spend_per_pop_FD_lagged +total_spend_10millions_FD_lagged+ Claimant_percent_FD + CCGpop_FD +Unemployment_percent_FD +BAME_percent_FD+Qual_lvl4_percent_FD+GDHI_FD ,  data=MyAnnualDataCCG)
+
+completegpdata <- MyAnnualDataCCG[complete.cases(MyAnnualDataCCG$number_of_doctors),]
+completegpdata <- completegpdata[complete.cases(completegpdata$Treatable_Mortality_Rate),]
+
+
+quiet <- function(x) { 
+  sink(tempfile()) 
+  on.exit(sink()) 
+  invisible(force(x)) 
+} 
+
+fit <- quiet(npCBPS(Private_Sector_Procurement_Spend ~ number_of_doctors, data = completegpdata))
+fit2 <- quiet(npCBPS(Private_Sector_Procurement_Spend ~ Treatable_Mortality_2013, data = MyAnnualDataCCG))
+
+weightedgpreg <- lm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+lagged_la_spend+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+factor(dept)+factor(year), weights = fit$fitted, data=completegpdata)
+weightedmortreg <- lm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+lagged_la_spend+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+factor(dept)+factor(year), weights = fit2$fitted, data=MyAnnualDataCCG)
+
+MLM <- lmer(log(Treatable_mortality_rate) ~ 1 + Lagged_Private_Procurement+Lagged_LA_spend+ Lagged_totalCCG_spend+Claimant_percent+log(Est_Population)+Unemployment_percent+BAME_percent+Qual_lvl4_percent+log(GDHI_per_person)+factor(year)+ (1 | ccg19cd), data = ladata2, control = lmerControl(optimizer = "bobyqa"))
+
+class(MLM) <- "lmerMod"
+
+
+finalFEusingLM <- lm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+lagged_la_spend+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+factor(dept)+factor(year),  data=MyAnnualDataCCG)
+
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "Private_Sector_Procurement_Spend_FD_lagged"] <- "Lagged_Private_Procurement"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "Local_Authority_Spend_per_pop_FD_lagged"] <- "Lagged_LA_spend"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "total_spend_10millions_FD_lagged"] <- "Lagged_totalCCG_spend"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "Claimant_percent_FD"] <- "Claimant_percent"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "CCGpop_FD"] <- "log(Est_Population)"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "Unemployment_percent_FD"] <- "Unemployment_percent"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "BAME_percent_FD"] <- "BAME_percent"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "Qual_lvl4_percent_FD"] <- "Qual_lvl4_percent"
+names(FinalFD$coefficients)[names(FinalFD$coefficients) == "GDHI_FD"] <- "log(GDHI_per_person)"
+
+names(weightedgpreg$coefficients)[names(weightedgpreg$coefficients) == "Lagged_Private_Procurement"] <- "Lagged_Private_Procurement"
+names(weightedgpreg$coefficients)[names(weightedgpreg$coefficients) == "lagged_la_spend"] <- "Lagged_LA_spend"
+names(weightedgpreg$coefficients)[names(weightedgpreg$coefficients) == "Lagged_Total_Spend"] <- "Lagged_totalCCG_spend"
+names(weightedgpreg$coefficients)[names(weightedgpreg$coefficients) == "log(CCGpop)"] <- "log(Est_Population)"
+
+names(weightedmortreg$coefficients)[names(weightedmortreg$coefficients) == "Lagged_Private_Procurement"] <- "Lagged_Private_Procurement"
+names(weightedmortreg$coefficients)[names(weightedmortreg$coefficients) == "lagged_la_spend"] <- "Lagged_LA_spend"
+names(weightedmortreg$coefficients)[names(weightedmortreg$coefficients) == "Lagged_Total_Spend"] <- "Lagged_totalCCG_spend"
+names(weightedmortreg$coefficients)[names(weightedmortreg$coefficients) == "log(CCGpop)"] <- "log(Est_Population)"
+
+names(finalFEusingLM$coefficients)[names(finalFEusingLM$coefficients) == "lagged_la_spend"] <- "Lagged_LA_spend"
+names(finalFEusingLM$coefficients)[names(finalFEusingLM$coefficients) == "Lagged_Total_Spend"] <- "Lagged_totalCCG_spend"
+names(finalFEusingLM$coefficients)[names(finalFEusingLM$coefficients) == "log(CCGpop)"] <- "log(Est_Population)"
+
+
+Ct1 <- coef_test(finalFEusingLM, vcov = "CR2", cluster = MyAnnualDataCCG$dept, test = "Satterthwaite")$SE
+Ct2 <- coef_test(FinalFD, vcov = "CR2", cluster = MyAnnualDataCCG$dept, test = "Satterthwaite")$SE
+Ct3 <- coef_test(weightedgpreg, vcov = "CR2", cluster = completegpdata$dept, test = "Satterthwaite")$SE
+Ct4 <- coef_test(weightedmortreg, vcov = "CR2", cluster = MyAnnualDataCCG$dept, test = "Satterthwaite")$SE
+# Ct5 <- coef_test(MLM, vcov = "CR1", cluster = ladata2$ccg19cd, test = "Satterthwaite")
+
+stargazer( finalFEusingLM, FinalFD,weightedgpreg,weightedmortreg, MLM, SE = list(Ct1,Ct2,Ct3,Ct4),
+           covariate.labels =c("Outsourcing (\\%)", "LA Spend","CCG Spend (£10Ms)",  "Claimant Rate (\\%)", "Population", "Unemployment (\\%)", "Minorty Ethnic (\\%)", "Degree Education (\\%)","GDHI"),  dep.var.labels = c("Ln(Tr. Mortality)","Ln(Tr. Mortality)","Ln(Tr. Mortality)","Ln(Tr. Mortality)"), column.labels = c(" FE", "FD", "CBPS (1)", "CBPS (2)", "MLM"),  add.lines=list(c("Individual FE", "Yes", "Yes","Yes","Yes","No", "Yes","Yes","Yes"), c("Time FE", "Yes","Yes", "Yes","Yes","Yes","Yes","Yes", "Yes"), c("Cluster-Robust SEs", "Yes","Yes", "Yes","Yes","No")), omit = c("dept", "year", "Constant"),star.char = c(".", "*", "**", "***"),  star.cutoffs = c(.1, .05, .01, .001), notes = c(". p<0.1; * p<0.05; ** p<0.01; *** p<0.001","Outsourcing, LA Spend, and CCG Spend have a one year lag.", "Tr. Mortality, Population and GDHI are log transformed", "Robust SEs are clustered at individual level and use a bias-reduced linearization estimator"),  header=F, type='latex',  no.space = T, single.row = F, font.size = "scriptsize", digits = 3, omit.stat=c("f", "ser"), notes.align = "r", notes.append = F, column.sep.width = "2pt", float=F, title = "Table 2. Outsourcing and Treatable Mortality",out = "C:\\Users\\bengo\\OneDrive - Nexus365\\Documents\\PhDing2020\\Outsourcing and Health Outcomes\\Table2dec.tex")
+
+#(exp(coef(finalFEusingLM)["Lagged_Private_Procurement"  ])-1)*100
+#confint(finalFEusingLM, "Lagged_Private_Procurement")
+#summary(lm(Treatable_Mortality_Rate~Lagged_Private_Procurement+lagged_la_spend+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+factor(dept)+factor(year),  data=MyAnnualDataCCG))
+
+```
+
+
+In table 2, the covariate-balancing models (3 & 4) use non-parametric method with propensity scores as proposed by Imai and Ratkovic [@RN125]. This weights the linear model (1) based on the number of active GPs (3) and treatable mortality rates in 2013 (4). The reason for running this analysis is to balance our model for the 'amount of health services' and the starting levels of the quality of healthcare services relatively. Our results are consistent when using other matching methods (see supplementary material, figure s4).
+
+Since 2013, the total numbers of treatable deaths in England has increased, breaking the trend of decreasing mortality for the previous ten years. Although, the age-standardised per capita rate of treatable deaths has remained mostly stable since 2013, this plateauing is a marked change from the previous trajectory. To calculate how much this change is explained by outsourcing over this period we conducted a fixed effects regression with the absolute number of treatable deaths as the response variable (supplementary material, table s4). We find significant positive associations: a one percentage point increase in outsourcing corresponds with average increases of 0.6 deaths for CCGs in the following year (p=0.012, 95% ci = 0.13-1.06). Using the average marginal effects from this finding, we calculate the fitted values had outsourcing been maintained at the 2013 average level of 4.01%. By contrasting this to the fitted values in our observed data we can conclude that over this period outsourcing was approximately associated with an extra 502 deaths (95% ci = 383-622), compared to the number of deaths if outsourcing had stayed at 2013 levels. 
+
+Figure 2 displays the expected trend in mean mortality rates for the 173 CCGs included in this study had outsourcing remained at 4.01% compared to the observed levels of treatable mortality. The expected trend line is constructed by subtracting the difference in fitted values of our regression holding outsourcing at 2013 levels and at observed values. Figure 2 shows that a significant fraction of the increases in overall treatable mortality since 2013 can be attributed to the outsourcing of services to the private sector.
+
+```{r, echo=FALSE, results='asis'}
+#download data
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+
+#treatable_mortality_deaths19 <- read_csv("Data/raw_tr_mort_numbers_19.csv") 
+#treatable_mortality_deaths19$year <- "2019"
+treatable_mortality_deaths <- read_csv("Data/tr_mort_deaths.csv") 
+names(treatable_mortality_deaths)[names(treatable_mortality_deaths)=="Area Code"] <- "ccg19cd"
+treatable_mortality_deaths <- treatable_mortality_deaths[c(2,4:17)]
+treatable_mortality_deaths <- treatable_mortality_deaths[complete.cases(treatable_mortality_deaths),]
+
+treatable_mortality_deaths <- melt(treatable_mortality_deaths,id = c("ccg19cd"), variable.name = "year")
+names(treatable_mortality_deaths)[names(treatable_mortality_deaths)=="value"] <- "treatable_mortality_deaths"
+#treatable_mortality_deaths <- rbind(treatable_mortality_deaths, treatable_mortality_deaths19)
+includedccgs <- unique(MyAnnualDataCCG[c(1)])
+includedccgs$include <- 1
+treatable_mortality_deaths <- merge(treatable_mortality_deaths, includedccgs, by=c("ccg19cd") ,all.y=T)
+treatable_mortality_deaths <- treatable_mortality_deaths[complete.cases(treatable_mortality_deaths$include),]
+
+
+
+treatable_mortality_deaths <- merge(treatable_mortality_deaths, MyAnnualDataCCG, by=c("ccg19cd", "year") ,all=T)
+
+ccgage20 <- read.csv("Data/ccgage20.csv")
+ccgage19 <- read.csv("Data/ccgage19.csv")
+ccgage18 <- read.csv("Data/ccgage18.csv")
+ccgage17 <- read.csv("Data/ccgage17.csv")
+ccgage16 <- read.csv("Data/ccgage16.csv")
+ccgage15 <- read.csv("Data/ccgage15.csv")
+ccgage14 <- read.csv("Data/ccgage14.csv")
+ccgage13 <- read.csv("Data/ccgage13.csv")
+
+ccgage20$year <- 2020
+ccgage19$year <- 2019
+ccgage18$year <- 2018
+ccgage17$year <- 2017
+ccgage16$year <- 2016
+ccgage15$year <- 2015
+ccgage14$year <- 2014
+ccgage13$year <- 2013
+
+ccgage <- rbind(ccgage13, ccgage14, ccgage15, ccgage16, ccgage17, ccgage18, ccgage19,ccgage20)
+
+ccgage$over80 <- as.double(ccgage$over80)
+ccgage$over75 <- as.double(ccgage$over75)
+ccgage$over70 <- as.double(ccgage$over70)
+
+names(ccgage)[names(ccgage)=="ï..ccg19cd"] <- "ccg19cd"
+
+treatable_mortality_deaths <- merge(treatable_mortality_deaths, ccgage, by=c("ccg19cd", "year"),all.x=T)
+
+
+
+ treatable_mortality_deathsl <- treatable_mortality_deaths[c("ccg19cd","year","Total_Private_sector_spend","treatable_mortality_deaths")]
+ treatable_mortality_deathsl$lagged_prive_totalexpenditure <- treatable_mortality_deathsl$Total_Private_sector_spend
+ 
+  treatable_mortality_deathsl$lagged_treat_deaths <- treatable_mortality_deathsl$treatable_mortality_deaths
+ 
+ treatable_mortality_deathsl <- treatable_mortality_deathsl[-c(3,4)]
+ 
+ treatable_mortality_deathsl$year <- as.character(treatable_mortality_deathsl$year)
+ 
+ treatable_mortality_deathsl$year <- as.double(treatable_mortality_deathsl$year)+1
+ 
+
+ treatable_mortality_deaths <- merge(treatable_mortality_deathsl, treatable_mortality_deaths, by = c("ccg19cd", "year"),all=T)
+ 
+ 
+ 
+ 
+ treatable_mortality_deaths$ffs <- treatable_mortality_deaths$lagged_prive_totalexpenditure/1000000
+
+ 
+ sum <- treatable_mortality_deaths[which(treatable_mortality_deaths$year=="2015"|treatable_mortality_deaths$year=="2015"|treatable_mortality_deaths$year=="2016"|treatable_mortality_deaths$year=="2017"|treatable_mortality_deaths$year=="2018"|treatable_mortality_deaths$year=="2019" |treatable_mortality_deaths$year=="2020"),]
+
+ finalFEusingLM <- lm(treatable_mortality_deaths~ffs+lagged_la_spend+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+factor(dept)+factor(year)+over75 ,  data=sum)
+ 
+ Ct1 <- coef_test(finalFEusingLM, vcov = "CR2", cluster = sum$dept, test = "Satterthwaite")$p
+ 
+ 
+ sum2 <- treatable_mortality_deaths[which(treatable_mortality_deaths$year=="2014"|treatable_mortality_deaths$year=="2015"|treatable_mortality_deaths$year=="2016"|treatable_mortality_deaths$year=="2017"|treatable_mortality_deaths$year=="2018"|treatable_mortality_deaths$year=="2019" ),]
+ 
+ 
+sum2$spendchange <- sum2$Total_Private_sector_spend-sum2$lagged_prive_totalexpenditure
+sum2$deathchange <- sum2$treatable_mortality_deaths-sum2$lagged_treat_deaths
+
+tot <- (sum(sum2$spendchange, na.rm=T)/1000000)*0.32409
+lower <- (sum(sum2$spendchange, na.rm=T)/1000000)*0.0738873    
+upper <- (sum(sum2$spendchange, na.rm=T)/1000000)*0.5743007
+
+
+sum2$adddeaths <- ((sum2$spendchange)/1000000)*0.32409
+sum2$adddeathslwr <- ((sum2$spendchange)/1000000)*0.0738873
+sum2$adddeathsupr <- ((sum2$spendchange)/1000000)*0.7743007
+
+
+# 
+# 
+# library(ggeffects)
+# library(effects)
+# 
+# mydf2013rate<-margins(finalFEusingLM_absolute,variables = c("Lagged_Private_Procurement"),at = list(Lagged_Private_Procurement = 4.143819) ,ci.lvl = 0.95)
+# mydfactualfitted<-margins(finalFEusingLM_absolute,variables = c("Lagged_Private_Procurement") ,ci.lvl = 0.95)
+# 
+# #95% confidence interval = effect size ± 1.96 × standard error of the effect size
+# mydf2013rate <- mydf2013rate[c(1,2,50,51,52)]
+# mydfactualfitted <- mydfactualfitted[c(1,2,50,51,52)]
+# 
+# mydfactualfitted$lower <- as.double(mydfactualfitted$fitted)-(mydfactualfitted$se.fitted*1.96)
+# mydfactualfitted$upper <- as.double(mydfactualfitted$fitted)+(mydfactualfitted$se.fitted*1.96)
+# 
+# mydf2013rate$lower <- as.double(mydf2013rate$fitted)-(mydf2013rate$se.fitted*1.96)
+# mydf2013rate$upper <- as.double(mydf2013rate$fitted)+(mydf2013rate$se.fitted*1.96)
+# 
+# mydf2013rate <- mydf2013rate[c(1,2,3,6,7)]
+# mydfactualfitted <- mydfactualfitted[c(1,2,3,6,7)]
+# 
+# names(mydf2013rate)[names(mydf2013rate)=="fitted"] <- "fitted_2013"
+# names(mydf2013rate)[names(mydf2013rate)=="lower"] <- "lower_2013"
+# names(mydf2013rate)[names(mydf2013rate)=="upper"] <- "upper_2013"
+# 
+# totaldeathabsolute <- merge(mydf2013rate, mydfactualfitted, by=c("ccg19cd", "year"))
+# totaldeathabsoluteyear <- totaldeathabsolute[-c(1)]
+# totaldeathabsoluteyear <- aggregate(. ~year, data=totaldeathabsoluteyear, mean)
+# 
+# totaldeaths <- sum(totaldeathabsolute$fitted)-sum(totaldeathabsolute$fitted_2013)
+# totaldeathslower <- sum(totaldeathabsolute$lower)-sum(totaldeathabsolute$lower_2013)
+# totaldeathsupper <- sum(totaldeathabsolute$upper)-sum(totaldeathabsolute$upper_2013)
+# 
+# treatable_mortality_deathsagg <- treatable_mortality_deaths[c(2,3)]
+# treatable_mortality_deathsagg <- aggregate(. ~year, data=treatable_mortality_deathsagg, mean)
+# 
+# 
+# mydf <- totaldeathabsoluteyear
+# 
+# 
+# df <- setNames(data.frame(matrix(ncol = 9, nrow = 0)), c("year", "fitted_2013", "lower_2013", "upper_2013", "fitted", "lower", "upper"))
+# 
+# 
+# value2013 <- (c(2013, 0,0,0,0,0,0))
+# 
+# df <- rbind(df, value2013)
+# df <- setNames(df, c("year", "fitted_2013", "lower_2013", "upper_2013", "fitted", "lower", "upper"))
+# 
+# mydf <- rbind(df,mydf )
+# 
+# 
+# mydf <- merge(mydf, treatable_mortality_deathsagg, by="year", all=T)
+# 
+# 
+sum2$group=1
+
+sum2$syntheticvalue <- sum2$treatable_mortality_deaths 
+sum2$syntheticupper <- sum2$treatable_mortality_deaths 
+sum2$syntheticlower <- sum2$treatable_mortality_deaths 
+
+sum2[which(sum2$year==2014),]$syntheticvalue <- sum2[which(sum2$year==2014),]$treatable_mortality_deaths
+sum2[which(sum2$year==2014),]$syntheticupper <- sum2[which(sum2$year==2014),]$treatable_mortality_deaths
+sum2[which(sum2$year==2014),]$syntheticlower <- sum2[which(sum2$year==2014),]$treatable_mortality_deaths
+
+sum2[which(sum2$year==2015),]$syntheticvalue <- sum2[which(sum2$year==2015),]$treatable_mortality_deaths-(sum2[which(sum2$year==2015),]$adddeaths)
+sum2[which(sum2$year==2015),]$syntheticupper <- sum2[which(sum2$year==2015),]$treatable_mortality_deaths-(sum2[which(sum2$year==2015),]$adddeathsupr)
+sum2[which(sum2$year==2015),]$syntheticlower <- sum2[which(sum2$year==2015),]$treatable_mortality_deaths-(sum2[which(sum2$year==2015),]$adddeathslwr)
+
+sum2[which(sum2$year==2016),]$syntheticvalue <- sum2[which(sum2$year==2015),]$syntheticvalue+(sum2[which(sum2$year==2016),]$deathchange)-(sum2[which(sum2$year==2016),]$adddeaths)
+sum2[which(sum2$year==2016),]$syntheticupper<- sum2[which(sum2$year==2015),]$syntheticupper+(sum2[which(sum2$year==2016),]$deathchange)-(sum2[which(sum2$year==2016),]$adddeathsupr)
+sum2[which(sum2$year==2016),]$syntheticlower <- sum2[which(sum2$year==2015),]$syntheticlower+(sum2[which(sum2$year==2016),]$deathchange)-(sum2[which(sum2$year==2016),]$adddeathslwr)
+
+
+sum2[which(sum2$year==2017),]$syntheticvalue <- sum2[which(sum2$year==2016),]$syntheticvalue+(sum2[which(sum2$year==2017),]$deathchange)-(sum2[which(sum2$year==2017),]$adddeaths)
+sum2[which(sum2$year==2017),]$syntheticupper<- sum2[which(sum2$year==2016),]$syntheticupper+(sum2[which(sum2$year==2017),]$deathchange)-(sum2[which(sum2$year==2017),]$adddeathsupr)
+sum2[which(sum2$year==2017),]$syntheticlower <- sum2[which(sum2$year==2016),]$syntheticlower+(sum2[which(sum2$year==2017),]$deathchange)-(sum2[which(sum2$year==2017),]$adddeathslwr)
+
+sum2[which(sum2$year==2018),]$syntheticvalue <- sum2[which(sum2$year==2017),]$syntheticvalue+(sum2[which(sum2$year==2018),]$deathchange)-(sum2[which(sum2$year==2018),]$adddeaths)
+sum2[which(sum2$year==2018),]$syntheticupper<- sum2[which(sum2$year==2017),]$syntheticupper+(sum2[which(sum2$year==2018),]$deathchange)-(sum2[which(sum2$year==2018),]$adddeathsupr)
+sum2[which(sum2$year==2018),]$syntheticlower <- sum2[which(sum2$year==2017),]$syntheticlower+(sum2[which(sum2$year==2018),]$deathchange)-(sum2[which(sum2$year==2018),]$adddeathslwr)
+
+
+ tot2 <- sum(sum2[complete.cases(sum2$syntheticvalue),]$treatable_mortality_deaths, na.rm=T)-sum(sum2$syntheticvalue, na.rm=T)
+  lwr2 <- sum(sum2[complete.cases(sum2$syntheticvalue),]$treatable_mortality_deaths, na.rm=T)-sum(sum2$syntheticupper, na.rm=T)
+   upr2 <- sum(sum2[complete.cases(sum2$syntheticvalue),]$treatable_mortality_deaths, na.rm=T)-sum(sum2$syntheticlower, na.rm=T)
+# 
+# 
+ # sum2$syntheticvalue <- sum2$treatable_mortality_deaths -(sum2$adddeaths)
+ # sum2$syntheticupper <- sum2$treatable_mortality_deaths -(sum2$adddeathsupr)
+ # sum2$syntheticlower <- sum2$treatable_mortality_deaths -(sum2$adddeathslwr)
+# sum2yr <-   sum2[c(1,2,112,113,114,115,116,117)]
+
+ # sum2yr <- merge(sum2, treatable_mortality_deaths, by=c("ccg19cd", "year"), all.y=T)
+ 
+ prelist <- sum2[which(sum2$year!="2014"&sum2$year!="2019"),]
+ prelist <- prelist[complete.cases(prelist$syntheticvalue),]
+ 
+prelistn <- prelist %>% group_by(ccg19cd) %>%tally()
+
+prelistn <- prelistn[which(prelistn$n>=4),]
+
+prelistn$keep <- 1
+
+
+sum2yr <-   sum2[c("ccg19cd","year","syntheticvalue","syntheticupper", "syntheticlower")]
+
+sum2yr <- merge(sum2yr, treatable_mortality_deaths, by=c("ccg19cd", "year"), all=T)
+sum2yr <- merge(sum2yr, prelistn, by="ccg19cd", all.x=T)  
+
+sum2yr <-   sum2yr[c("year","syntheticvalue","syntheticupper", "syntheticlower","treatable_mortality_deaths","keep")]
+
+ rm(sum)
+ sum2yr$year <- factor(sum2yr$year)
+
+ sum2yr <- sum2yr[which(sum2yr$keep==1),]
+ 
+ 
+ sum2yr <- aggregate(. ~(year), data=sum2yr, sum,  na.rm=TRUE, na.action=NULL)
+
+sum2yr$group=1
+sum2yr <- sum2yr[which(sum2yr$year!="2019"),]
+
+sum2yr[which(sum2yr$year==2014),]$syntheticvalue <- 17170.0
+sum2yr[which(sum2yr$year==2014),]$syntheticupper <- 17170.0
+sum2yr[which(sum2yr$year==2014),]$syntheticlower <- 17170.0
+
+sum2yr[which(sum2yr$year==2013),]$syntheticvalue <- NA
+sum2yr[which(sum2yr$year==2013),]$syntheticupper <- NA
+sum2yr[which(sum2yr$year==2013),]$syntheticlower <- NA
+
+theme_Publication <- function(base_size=9, base_family="TT Times New Roman") {
+      library(grid)
+      library(ggthemes)
+      (theme_foundation(base_size=base_size, base_family=base_family)
+       + theme(plot.title = element_text(size = rel(1.2), hjust = 0.5),
+               text = element_text(),
+               panel.background = element_rect(colour = NA),
+               plot.background = element_rect(colour = NA),
+               panel.border = element_rect(colour = NA),
+               axis.title = element_text(size = rel(1)),
+               axis.title.y = element_text(angle=90,vjust =2),
+               axis.title.x = element_text(vjust = -0.2),
+               axis.text = element_text(), 
+               axis.line = element_line(colour="black"),
+               axis.ticks = element_line(),
+               panel.grid.major = element_line(colour="#f0f0f0"),
+               panel.grid.minor = element_blank(),
+               legend.key = element_rect(colour = NA),
+               legend.position = "bottom",
+               legend.direction = "horizontal",
+               legend.key.size= unit(0.2, "cm"),
+               legend.margin = unit(0, "cm"),
+               legend.title = element_text(),
+               plot.margin=unit(c(10,5,5,5),"mm"),
+               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+               strip.text = element_text()
+          ))
+      
+}
+sum2yrs <- sum2yr[which(sum2yr$year!="2005"&sum2yr$year!="2006"&sum2yr$year!="2007"&sum2yr$year!="2020"&sum2yr$year!="2021"&sum2yr$year!="2022"),]
+
+ plot2 <- 
+  ggplot(sum2yrs, aes(x = year, y = treatable_mortality_deaths, group=group)) +
+  geom_line()+
+  geom_line(aes(y=syntheticvalue),linetype = "dashed", color = "darkgray")+
+ geom_ribbon(aes(ymin = syntheticlower, ymax = syntheticupper), 
+            alpha=0.1, 
+            linetype="dashed",
+            color="lightgray")+
+    ylim(c(16700,19500))+
+  geom_vline(xintercept = 6.33,vjust = 250 ,linetype = "dotted")+
+  labs(x="Year", y="Treatable Deaths (Total of 83 CCGs)")+
+  geom_text(x=6.33, y=19000, label="2012 Health and Social Care Act implemented", size = 9/.pt, aes(family = "serif"))+
+  geom_text(x="2015", y=17400, label = "Mortality if no extra outsourcing", size = 5/.pt, aes(family = "serif"), color = "darkgray", angle = 44)+
+  geom_text(x="2015", y=17750, label = "Observed mortality", size = 5/.pt, aes(family = "serif"), angle = 44)+
+  theme_Publication()
+  
+  #, caption = "Figure 2. Mean numbers of treatable deaths for 173 English CCGs included in this study.\nDashed line represents the expected trend if outsourcing did not increase from average 2013 levels."
+   library(tikzDevice)
+  tikz('Figure2_final.tex', width = 5.7, height=4.5)
+ # 
+  print(plot2) # you *have to* print the object you created
+  dev.off() # not device.off()
+
+```
+
+
+We also conducted our analysis changing the response variable from treatable mortality to 'preventable mortality' (see supplementary material, table s1). Preventable mortality are deaths that can be mainly avoided through effective public health interventions and should therefore be less related to quality of healthcare services, the majority of which will primarily deliver medical care. We find no significant association between outsourcing and preventable mortality rates. An increase in one percent of outsourcing is associated with an increase to preventable mortality of 0.1% (95% CI -0.09% to 0.32%, p=0.264909).  Therefore we can be more confident that our observed relationship between outsourcing and treatable mortality is not a product of general health outcomes in the population but is more directly associated the quality of healthcare services.
+
+We finally ran our linear fixed effects model with absolute levels of private sector spend, controlling for total CCG spend along with all other covariates (see supplementary material, table s2). We also find a positive relationship between total expenditure on PFP providers and treatable mortality in the following year. An increase of £10 million spent on for-profit companies is associated with an increase in treatable mortality of 1.38% or 1.33 deaths per 100,000 population (95% CI 0.072% to 2.70%, p=0.038697).
+
+## Sensitivity Analysis
+
+Figure 3 displays a sensitivity check to account for any potential error in the contract data. To be confident that our main finding is robust, we tested whether random error in the data would vary the finding substantially. We ran the linear fixed-effects model (Table 2, model 1) 10,000 times but multiplied each observation for outsourcing by a random number with a specified minimum and maximum limit. We then repeated this five times with different maximum error sizes, the largest of which was 50% (replicated by multiplying each value by a random number between 0.5 and 1.5) - far larger than we would expect to exist in the data. We then plotted the density of the resulting coefficients for outsourcing in each regression. 
+
+```{r, out.width="95%"}
+setwd("C:/Users/bengo/OneDrive - Nexus365/Documents/PhDing2020")
+
+# ####sinaplot_random####
+# library(future.apply)
+# plan(multisession)
+# set.seed(1001)
+# 
+# 
+# randomerror1 <- (5+10.*pracma::rand(1146,10000))/10
+# randomerror2 <- (6+8.*pracma::rand(1146,10000))/10
+# randomerror3 <- (7+6.*pracma::rand(1146,10000))/10
+# randomerror4 <- (8+4.*pracma::rand(1146,10000))/10
+# randomerror5 <- (9+2.*pracma::rand(1146,10000))/10
+# 
+# 
+# randomerror1 <- randomerror1*MyAnnualDataCCG$Lagged_Private_Procurement
+# randomerror2 <- randomerror2*MyAnnualDataCCG$Lagged_Private_Procurement
+# randomerror3 <- randomerror3*MyAnnualDataCCG$Lagged_Private_Procurement
+# randomerror4 <- randomerror4*MyAnnualDataCCG$Lagged_Private_Procurement
+# randomerror5 <- randomerror5*MyAnnualDataCCG$Lagged_Private_Procurement
+# 
+# plan(multisession)
+# 
+# my_lms1 <- future_lapply(1:10000, function(x) summary(lm(log(MyAnnualDataCCG$Treatable_Mortality_Rate) ~ randomerror1[,x]+factor(MyAnnualDataCCG$dept)+factor(MyAnnualDataCCG$year)+log(MyAnnualDataCCG$GDHI_per_person)+MyAnnualDataCCG$Claimant_percent+  log(MyAnnualDataCCG$CCGpop) +MyAnnualDataCCG$Unemployment_percent +MyAnnualDataCCG$BAME_percent+MyAnnualDataCCG$Qual_lvl4_percent +MyAnnualDataCCG$Lagged_Total_Spend+MyAnnualDataCCG$lagged_la_spend)))
+# 
+# df <- my_lms1 %>%
+#   map("coefficients") %>% 
+#   do.call(rbind.data.frame, .) %>% 
+#   rownames_to_column %>% 
+#   as_tibble %>% 
+#   setNames(c("predictor", "b", "SE", "t", "p")) %>% 
+#   dplyr::arrange(p) %>% 
+#   dplyr::filter(str_detect(predictor, "random"))
+# 
+# write.csv(df, "Data/loopssummary12.csv")
+# 
+# 
+# 
+# my_lms2 <- future_lapply(1:10000, function(x) summary(lm(log(MyAnnualDataCCG$Treatable_Mortality_Rate) ~ randomerror2[,x]+factor(MyAnnualDataCCG$dept)+factor(MyAnnualDataCCG$year)+log(MyAnnualDataCCG$GDHI_per_person)+MyAnnualDataCCG$Claimant_percent+  log(MyAnnualDataCCG$CCGpop) +MyAnnualDataCCG$Unemployment_percent +MyAnnualDataCCG$BAME_percent+MyAnnualDataCCG$Qual_lvl4_percent +MyAnnualDataCCG$Lagged_Total_Spend+MyAnnualDataCCG$lagged_la_spend)))
+# df2 <- my_lms2 %>%
+#   map("coefficients") %>% 
+#   do.call(rbind.data.frame, .) %>% 
+#   rownames_to_column %>% 
+#   as_tibble %>% 
+#   setNames(c("predictor", "b", "SE", "t", "p")) %>% 
+#   dplyr::arrange(p) %>% 
+#   dplyr::filter(str_detect(predictor, "random"))
+# 
+# write.csv(df2, "Data/loopssummary22.csv")
+# 
+# 
+# my_lms3 <- future_lapply(1:10000, function(x) summary(lm(log(MyAnnualDataCCG$Treatable_Mortality_Rate) ~ randomerror3[,x]+factor(MyAnnualDataCCG$dept)+factor(MyAnnualDataCCG$year)+log(MyAnnualDataCCG$GDHI_per_person)+MyAnnualDataCCG$Claimant_percent+  log(MyAnnualDataCCG$CCGpop) +MyAnnualDataCCG$Unemployment_percent +MyAnnualDataCCG$BAME_percent+MyAnnualDataCCG$Qual_lvl4_percent +MyAnnualDataCCG$Lagged_Total_Spend+MyAnnualDataCCG$lagged_la_spend)))
+# df3 <- my_lms3 %>%
+#   map("coefficients") %>% 
+#   do.call(rbind.data.frame, .) %>% 
+#   rownames_to_column %>% 
+#   as_tibble %>% 
+#   setNames(c("predictor", "b", "SE", "t", "p")) %>% 
+#   dplyr::arrange(p) %>% 
+#   dplyr::filter(str_detect(predictor, "random"))
+# 
+# write.csv(df3, "Data/loopssummary32.csv")
+# 
+# 
+# my_lms4 <- future_lapply(1:10000, function(x) summary(lm(log(MyAnnualDataCCG$Treatable_Mortality_Rate) ~ randomerror4[,x]+factor(MyAnnualDataCCG$dept)+factor(MyAnnualDataCCG$year)+log(MyAnnualDataCCG$GDHI_per_person)+MyAnnualDataCCG$Claimant_percent+  log(MyAnnualDataCCG$CCGpop) +MyAnnualDataCCG$Unemployment_percent +MyAnnualDataCCG$BAME_percent+MyAnnualDataCCG$Qual_lvl4_percent +MyAnnualDataCCG$Lagged_Total_Spend+MyAnnualDataCCG$lagged_la_spend)))
+# df4 <- my_lms4 %>%
+#   map("coefficients") %>% 
+#   do.call(rbind.data.frame, .) %>% 
+#   rownames_to_column %>% 
+#   as_tibble %>% 
+#   setNames(c("predictor", "b", "SE", "t", "p")) %>% 
+#   dplyr::arrange(p) %>% 
+#   dplyr::filter(str_detect(predictor, "random"))
+# 
+# write.csv(df4, "Data/loopssummary42.csv")
+# 
+# 
+# 
+# my_lms5 <- future_lapply(1:10000, function(x) summary(lm(log(MyAnnualDataCCG$Treatable_Mortality_Rate) ~ randomerror5[,x]+factor(MyAnnualDataCCG$dept)+factor(MyAnnualDataCCG$year)+log(MyAnnualDataCCG$GDHI_per_person)+MyAnnualDataCCG$Claimant_percent+  log(MyAnnualDataCCG$CCGpop) +MyAnnualDataCCG$Unemployment_percent +MyAnnualDataCCG$BAME_percent+MyAnnualDataCCG$Qual_lvl4_percent +MyAnnualDataCCG$Lagged_Total_Spend+MyAnnualDataCCG$lagged_la_spend)))
+# 
+# df5 <- my_lms5 %>%
+#   map("coefficients") %>% 
+#   do.call(rbind.data.frame, .) %>% 
+#   rownames_to_column %>% 
+#   as_tibble %>% 
+#   setNames(c("predictor", "b", "SE", "t", "p")) %>% 
+#   dplyr::arrange(p) %>% 
+#   dplyr::filter(str_detect(predictor, "random"))
+# 
+# write.csv(df5, "Data/loopssummary52.csv")
+loopsummary1 <- read.csv("Data/loopssummary12.csv")
+loopsummary2 <- read.csv("Data/loopssummary22.csv")
+loopsummary3 <- read.csv("Data/loopssummary32.csv")
+loopsummary4 <- read.csv("Data/loopssummary42.csv")
+loopsummary5 <- read.csv("Data/loopssummary52.csv")
+
+loopsummary1$`Maximum Error Size` <- "50%" 
+loopsummary2$`Maximum Error Size` <- "40%" 
+loopsummary3$`Maximum Error Size` <- "30%" 
+loopsummary4$`Maximum Error Size` <- "20%" 
+loopsummary5$`Maximum Error Size` <- "10%" 
+
+randomdf <- rbind(loopsummary1,loopsummary2,loopsummary3,loopsummary4,loopsummary5)
+
+randomdf <- randomdf %>% mutate(`Significant Pvalue` = ifelse(randomdf$p<0.05, "Yes","No"))
+library(ggforce)
+
+sina_plot <- ggplot(randomdf, aes(y=b, x=`Maximum Error Size`))+
+  geom_violin()+
+  geom_sina(aes(color = `Significant Pvalue`, group = `Maximum Error Size`),size =.4, alpha = 0.7)+
+  labs(y="Outsourcing Coefficient", x = "Max Error")+
+  geom_hline(yintercept=0.0038, linetype='dashed', colour = "black")+
+  theme_minimal()+
+  theme(legend.key.size = unit(3,"line"),
+        legend.text = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        axis.title = element_text(size = 18))+ 
+  guides(colour = guide_legend(override.aes = list(size=8)))
+sina_plot
+#   tikz('F_igure3__.tex', width = 5.7, height=4.5)
+# # # # 
+#    print(sina_plot) # you *have to* print the object you created
+#    dev.off() # not device.off()
+
+ggsave("sina_plot_ranlag.png", plot=sina_plot, width=20, height=12, dpi=600)
+
+
+
+```
+
+Figure 3 shows that if the outsourcing data contains random error up to 10% of the magnitude of the values, we could expect our effect size of outsourcing on treatable mortality to vary from between 0.0033 to 0.0043. As the random error increases in magnitude we see an expected shift in the modal coefficient size towards zero and a wider distribution of coefficient sizes. However, even given very large levels of random error in the data, our finding is still comparable - in that the association between outsourcing and treatable mortality is almost always positive and trends close to our observed coefficient size of 0.004. 
+
+In the supplementary material (s2) we display how figure 2 combines with a specification curve. Running the same error simulations for each of the 214 possible combinations of covariates in our model. This displays how the model specification and any level of error in the data may change our overall finding. All possible specifications report majorly comparable findings with positive associations between outsourcing and treatable mortality.
+
+Finally we run the linear fixed effects regression (Table 2, model 1) 172 times, removing a different individual CCG on each loop (see supplementary material s4). This was done to check whether any single CCG was primarily driving our overall result. We find that all regressions return a statistically significant, positive result. The largest change to the finding was found when dropping East Staffordshire CCG, the effect size reduces from 0.40% to 0.34% (95% CI 0·06% to 0·62%; p= 0.017730) but the finding is still comparable and robust. We can therefore be confident that our result is not considerably biased by any single CCG.
+
+# Discussion
+
+The levels of outsourcing to for-profit healthcare providers from England's NHS commissioners has increased significantly since 2013, raising to over 6% of the total reported expenditure as of March 2020. We find that increases in outsourcing from CCGs in England are associated with a worsening in the quality of healthcare services, measured by higher mortality rates. 
+
+Since reforms to England's NHS in 2012, some measures of healthcare quality have been worsening whilst the population statistics have reported a period of increasing mortality and stalling life expectancy[@RN130; @RN133; @RN135]. Many have attributed these phenomena to austerity policies, leaving public services underfunded and having direct consequences on the social determinants of health through welfare cuts[@RN129; @RN136; @RN140]. We suggest in this paper that outsourcing to for-profit companies is another way that the reforms of the post-financial crisis era have impacted NHS service quality and mortality rates.
+
+The 'marketisation' of healthcare services is underpinned by beliefs that openness, competition and management autonomy can improve the efficiency and performance of state-funded services[@RN116]. For decades these principles have dictated the organisation of England's NHS [@RN141]. The underlying assumption that opening a market to new actors and increasing competition will improve services is directly challenged by the findings of this paper. Although our research cannot identify a causal link between the 2012 reforms, outsourcing and increasing mortality rates, we have taken several steps to ensure that the relationship is robust. This includes controlling for time-variant confounding variables such as income levels as well as the total expenditure of CCGs and local authorities. We also demonstrate that the association is not explained by mortality rates at the beginning of the period or the size of provision in each CCG.
+
+Our findings support research in other contexts where increased privatisation has been reportedly associated with increased mortality [@RN117]. Taken together, this field of research is producing consistent evidence that transitioning from a primarily state-owned healthcare service to a more mixed provision results in worse healthcare. Strengths of our research lie in the extent and granularity of the novel data set, enabling a longitudinal evaluation of outsourcing of 173 regional commissioners. However, the data cannot identify exact mechanisms behind the findings. To ensure that the findings in this paper are explained by some form of healthcare service performance, we used a measure of mortality from causes that should be treatable by medical care. We also found no association when using a measure of mortality from causes that are treated by public health interventions, which sits largely outside the remit of commissioners. Overall, we can be confident that the link between outsourcing and mortality rates is through the quality of care and encourage further research as to the precise mechanisms of worsening care in England since 2013.
+
+The implications of this research are profound for the many health systems flirting with increased privatisation, suggesting that a for-profit provision of care services could be expected to worsen population outcomes. In the case of England's NHS, our research raises doubts that the current extent of private sector use is optimal for the quality of care and would suggest that further increases in for-profit provision may be a mistake. To the authors' knowledge, this is the first rigorous assessment of the relationship between private-sector outsourcing and the quality of healthcare provision following the 2012 reforms to England's National Health Service. It indicates that part of these reforms, encouraging private sector provision, have resulted in a worsening in the quality of care and hundreds of additional deaths.
+
+Since the passing of the 2012 Health and Social Care Act in England, for-profit companies are providing an increasingly large share of NHS services. Concerns about the quality of care provided by for-profit companies appear to be justified as outsourcing is associated with higher rates of mortality from causes which could be treated by effective medical interventions. 
+
+
+\newpage
+
+# References
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
