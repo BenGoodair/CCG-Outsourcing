@@ -1,5 +1,5 @@
 # CCG-Outsourcing
-A repository for underlying code behind the upcoming paper, co-authored with Aaron Reeves: Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.
+A repository for underlying code behind the upcoming paper, co-authored with [Aaron Reeves](https://aaronreeves.org/): Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.
 
 The main data source of this paper is available from:
 
