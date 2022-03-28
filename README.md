@@ -3,6 +3,8 @@ A repository for underlying code behind the upcoming paper, co-authored with Aar
 
 The main data source of this paper is available from:
 
-Rahal, Charles & Mohan, John, 2022. "The Role of the Third Sector in Public Health Service Provision: Evidence from 25,338 heterogeneous procurement datasets," SocArXiv t4x52, Center for Open Science.
+[Rahal, Charles & Mohan, John, 2022. "The Role of the Third Sector in Public Health Service Provision: Evidence from 25,338 heterogeneous procurement datasets," SocArXiv t4x52, Center for Open Science.](https://ideas.repec.org/p/osf/socarx/t4x52.html)
 
-And I am very grateful to the support and guidance of Charles Rahal in the development of this paper.
+And I am very grateful to the support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
+
+Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository
