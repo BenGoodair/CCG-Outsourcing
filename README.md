@@ -1,7 +1,7 @@
 # CCG-Outsourcing
 A repository for underlying code behind the upcoming paper, co-authored with [Aaron Reeves](https://aaronreeves.org/): Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.
 
-The entire paper is written in RMarkdown with all data required for reproducibility posted in the data folder of this repository. In theory anyone should be able to download 'outsourcing_and_mortality.Rmd' and reproduce all the analyses in the manuscript without any additional files.
+The entire paper is written in RMarkdown with all data required for reproducibility either pulled from repositories such as [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](10.5281/zenodo.5054717) or posted in the data folder of this repository. In theory anyone should be able to download 'outsourcing_and_mortality.Rmd' and reproduce all the analyses in the manuscript without any additional files.
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
