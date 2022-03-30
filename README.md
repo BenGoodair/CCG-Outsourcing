@@ -15,5 +15,7 @@ For the purposes of easy reproducibility, the code for this paper directly pulls
 
 Supplementary data used in analysis is published in this repository - again the code directly pulls the data so no data should need to be manually downloaded for the purpose of reproduction.
 
+Data cleaning code for the supplementary data is provided, location of the raw data is presented in the full paper.
+
 I am eternally grateful to the support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
 
