@@ -13,7 +13,7 @@ The main raw data source of this paper is available from:
 
 For the purposes of easy reproducibility, the code for this paper directly pulls the data from the repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717)
 
-Supplementary data used in analysis is published in this repository - again the code directly pulls the data so no data should need to be downloaded.
+Supplementary data used in analysis is published in this repository - again the code directly pulls the data so no data should need to be manually downloaded for the purpose of reproduction.
 
 I am eternally grateful to the support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
 
