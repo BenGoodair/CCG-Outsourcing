@@ -15,7 +15,7 @@ For the purposes of easy reproducibility, the code for our paper directly downlo
 
 Supplementary data used in the paper's analysis is published in this repository - again the code directly pulls the data so no data should need to be manually downloaded for the purpose of reproduction.
 
-Data cleaning code for the supplementary data is provided, location of the raw data is presented in the full paper.
+Data cleaning code for the supplementary data is provided for the sake of transparency.
 
-I am eternally grateful to the support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
+I am extremely grateful to the endless support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
 
