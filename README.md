@@ -7,15 +7,15 @@ The Rmd file makes use of a custom R package "NHS_privatisation_and_mortality_R_
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
-The key data used in this paper is available from:
+The NHS expenditure data used in this paper is available from:
 
 [Rahal, Charles & Mohan, John, 2022. "The Role of the Third Sector in Public Health Service Provision: Evidence from 25,338 heterogeneous procurement datasets," SocArXiv t4x52, Center for Open Science.](https://ideas.repec.org/p/osf/socarx/t4x52.html)
 
-For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717)
+For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
 
 Supplementary data used in the paper's analysis is published in this repository - again the code directly pulls the data so no data should need to be manually downloaded for the purpose of reproduction.
 
-Data cleaning code for the supplementary data is provided for the sake of transparency.
+Data cleaning code used to create the supplementary datasets is provided for the sake of transparency.
 
 I am extremely grateful to the endless support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
 
