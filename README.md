@@ -1,7 +1,7 @@
 # CCG-Outsourcing
 A repository of reproducibility files for the upcoming paper, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.'
 
-The entire paper is written in RMarkdown. In theory anyone should be able to download 'outsourcing_and_mortality.Rmd' and reproduce all the analyses, text and citations in the paper without any additional files. 
+The entire paper is written in RMarkdown. In theory anyone should be able to download 'outsourcing_and_mortality.Rmd' or 'Supplementary_Material.Rmd' and reproduce all the analyses, text and citations in the paper without any additional files. 
 
 The Rmd file makes use of a custom R package "NHS_privatisation_and_mortality_R_package". This package contains functions to download, clean, and analyse the data as per the paper. Raw code for these functions are available in this repository for full transparency.
 
@@ -13,7 +13,7 @@ The NHS expenditure data used in this paper is available from:
 
 For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
 
-Supplementary data used in the paper's analysis is published in this repository - again the code directly pulls the data so no data should need to be manually downloaded for the purpose of reproduction.
+Supplementary data used in the paper's analysis is published in this repository or loaded via APIs - again the code directly pulls the data so nothing should need to be manually downloaded for the purpose of reproduction.
 
 Data cleaning code used to create the supplementary datasets is provided for the sake of transparency.
 
