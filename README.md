@@ -22,6 +22,6 @@ I am extremely grateful to the endless support and guidance of [Charles Rahal](h
 
 
 
-[^1]: Warning running this code involves data to be directly downloaded to your pc. 
+[^1]: Warning: Running this code involves data to be directly downloaded to your pc. 
 [^2]: Some of the analyses involved in the paper are computationally intensive. To make them accessible, simulations are much reduced in power in the repoducibility code. 
 [^3]: Expect the Rmd file to take ~1 hour to knit a pdf version of the paper.
