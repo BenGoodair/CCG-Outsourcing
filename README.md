@@ -11,7 +11,7 @@ The NHS expenditure data used in this paper is available from:
 
 [Rahal, Charles & Mohan, John, 2022. "The Role of the Third Sector in Public Health Service Provision: Evidence from 25,338 heterogeneous procurement datasets," SocArXiv t4x52, Center for Open Science.](https://ideas.repec.org/p/osf/socarx/t4x52.html)
 
-For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
+For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the minted repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
 
 Supplementary data used in the paper's analysis is published in this repository or loaded via APIs - again the code directly pulls the data so nothing should need to be manually downloaded for the purpose of reproduction.
 
