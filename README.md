@@ -1,9 +1,9 @@
 # CCG-Outsourcing
 A repository of reproducibility files for the upcoming paper, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.'
 
-The entire paper is written in RMarkdown. In theory anyone should be able to download 'outsourcing_and_mortality.Rmd' or 'Supplementary_Material.Rmd' and reproduce all the analyses, text and citations in the paper without any additional files.[^1][^2][^3] For anyone without RStudio, a Binder version which runs all the code in a web browser is available here without any prerequisites.
+The entire paper is written in RMarkdown. In theory anyone should be able to download 'CCGOutsourcingMortality.Rmd' or 'SupplementaryMaterial.Rmd' and reproduce all the analyses, text and citations in the paper without any additional files.[^1][^2][^3] For anyone without RStudio, a Binder version which runs all the code in a web browser is available here without any prerequisites.
 
-The Rmd file makes use of a custom R package "NHS_privatisation_and_mortality_R_package". This package contains functions to download, clean, and analyse the data as per the paper. Raw code for these functions are available in this repository for full transparency.
+The Rmd file makes use of a custom R package "NHSOutsourcingMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. Raw code for these functions are available in this repository in 'NHS_Outsourcing_and_Mortality_Package.r' for full transparency.
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
@@ -24,4 +24,4 @@ I am extremely grateful to the endless support and guidance of [Charles Rahal](h
 
 [^1]: Warning: Running this code involves data to be directly downloaded to your pc. 
 [^2]: Some of the analyses involved in the paper are computationally intensive. To make them accessible, simulations are much reduced in power in the repoducibility code. 
-[^3]: Expect the Rmd file to take ~1 hour to knit a pdf version of the paper.
+[^3]: Expect the Rmd file to take ~15 minutes to knit a pdf version of the paper.
