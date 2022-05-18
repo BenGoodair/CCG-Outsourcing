@@ -1,5 +1,5 @@
 # CCG-Outsourcing
-A repository of reproducibility files for the upcoming paper, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.'
+A repository of reproducibility files for the upcoming paper in the Lancet Public Health, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Is the outsourcing of healthcare services to the private sector associated with higher mortality rates? An observational analysis of ‘creeping privatisation’ in England’s Clinical Commissioning Groups, 2013-2020.' 
 
 The entire paper is written in RMarkdown. In theory anyone should be able to download 'CCGOutsourcingMortality.Rmd' or 'SupplementaryMaterial.Rmd' and reproduce all the analyses, text and citations in the paper without any additional files.[^1][^2][^3] For anyone without RStudio, a Binder version which runs all the code in a web browser is available here without any prerequisites.
 
