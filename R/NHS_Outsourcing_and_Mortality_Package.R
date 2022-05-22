@@ -512,7 +512,7 @@ Create_figure_1 <- function(MyDataCCG) {
   #myDataTrust <- myDataTrust[which(myDataTrust$amount>0),]
   
   
-  myDataCCGfig1 <- merge(myDataCCGfig1, SIC, by= "CompanyNumber", all.x=TRUE)
+  myDataCCGfig1 <- merge(myDataCCGfig1, SIC, by= "supplier", all.x=TRUE)
   ####retrieve numeric sic codes from the data####
   
   myDataCCGfig1$sic <- as.character(regmatches(myDataCCGfig1$SICCode.SicText_1, gregexpr("[[:digit:]]+", myDataCCGfig1$SICCode.SicText_1)))
