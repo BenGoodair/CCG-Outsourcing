@@ -564,18 +564,18 @@ Create_figure_1 <- function(MyDataCCG) {
   myDataCCGfig1all <- myDataCCGfig1
   
   #select date and amount variables
-  myDataCCGfig1private <- myDataCCGfig1private[c(3,8)]
-  myDataCCGfig1realestate <- myDataCCGfig1realestate[c(3,8)]
-  myDataCCGfig1health <- myDataCCGfig1health[c(3,8)]
-  myDataCCGfig1socialwork <- myDataCCGfig1socialwork[c(3,8)]
-  myDataCCGfig1residential <- myDataCCGfig1residential[c(3,8)]
-  myDataCCGfig1transport <- myDataCCGfig1transport[c(3,8)]
-  myDataCCGfig1businesssup <- myDataCCGfig1businesssup[c(3,8)]
-  myDataCCGfig1management <- myDataCCGfig1management[c(3,8)]
-  myDataCCGfig1computing <- myDataCCGfig1computing[c(3,8)]
-  myDataCCGfig1legal <- myDataCCGfig1legal[c(3,8)]
-  myDataCCGfig1publicad <- myDataCCGfig1publicad[c(3,8)]
-  myDataCCGfig1all <- myDataCCGfig1all[c(3,8)]
+  myDataCCGfig1private <- myDataCCGfig1private[c(3,7)]
+  myDataCCGfig1realestate <- myDataCCGfig1realestate[c(3,7)]
+  myDataCCGfig1health <- myDataCCGfig1health[c(3,7)]
+  myDataCCGfig1socialwork <- myDataCCGfig1socialwork[c(3,7)]
+  myDataCCGfig1residential <- myDataCCGfig1residential[c(3,7)]
+  myDataCCGfig1transport <- myDataCCGfig1transport[c(3,7)]
+  myDataCCGfig1businesssup <- myDataCCGfig1businesssup[c(3,7)]
+  myDataCCGfig1management <- myDataCCGfig1management[c(3,7)]
+  myDataCCGfig1computing <- myDataCCGfig1computing[c(3,7)]
+  myDataCCGfig1legal <- myDataCCGfig1legal[c(3,7)]
+  myDataCCGfig1publicad <- myDataCCGfig1publicad[c(3,7)]
+  myDataCCGfig1all <- myDataCCGfig1all[c(3,7)]
   
   #sum amount spent on each day
   myDataCCGfig1private <- aggregate(myDataCCGfig1private[-1], myDataCCGfig1private["date"], sum)
