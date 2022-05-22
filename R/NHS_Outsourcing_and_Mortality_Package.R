@@ -10,7 +10,7 @@ Create_Annual_CCG_dataset <- function(myDataCCG){
   
   ###Assign Date Variable###
   
-  myDataCCG$date <- as.Date(myDataCCG$date, format =  "%d/%m/%Y")
+  myDataCCG$date <- as.Date(myDataCCG$date, format =  "%Y-%m-%d")
   
   
   #Remove payments before the formal creation of CCGs in april 2013
@@ -20,7 +20,7 @@ Create_Annual_CCG_dataset <- function(myDataCCG){
   
   
   ###Merge Procurement Data with CH Data###
-  myDataCCG <- merge(myDataCCG, SIC, by= "supplier", all.x=TRUE)
+  y <- merge(myDataCCG, SIC, by= "supplier", all.x=TRUE)
   #rm(SIC)
   
   
