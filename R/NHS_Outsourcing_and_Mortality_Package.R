@@ -20,7 +20,7 @@ Create_Annual_CCG_dataset <- function(myDataCCG){
   
   
   ###Merge Procurement Data with CH Data###
-  y <- merge(myDataCCG, SIC, by= "supplier", all.x=TRUE)
+  myDataCCG <- merge(myDataCCG, SIC, by= "supplier", all.x=TRUE)
   #rm(SIC)
   
   
