@@ -478,13 +478,13 @@ Create_table_1 <- function(MyAnnualDataCCG) {
                             'Robust SEs are clustered at CCG level and use a bias-reduced linearization estimator (CR2)',
                             'Satterthwaite degrees of freedom used in MLM',
                             'Demographic Control variables include: Degree education (percent), Managerial or professional occupation (percent), Ethnic minority (percent), Unemployment rate (percent) and Claimant Rate (percent)'),
-               output = "latex") #%>%
+               output = "gt") %>%
     # add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
-    # tab_spanner(label = 'Fixed Effects', columns = 2:3) \%>\%
-    # tab_spanner(label = 'First Differences', columns = 4:5) %>%
-    # tab_spanner(label = 'Covariate Balancing (1)', columns = 6:7) %>%
-    # tab_spanner(label = 'Covariate Balancing (2)', columns = 8:9) %>%
-    # tab_spanner(label = 'Multi-Level Model', columns = 10:11)
+     tab_spanner(label = 'Fixed Effects', columns = 2:3) %>%
+     tab_spanner(label = 'First Differences', columns = 4:5) %>%
+     tab_spanner(label = 'Covariate Balancing (1)', columns = 6:7) %>%
+     tab_spanner(label = 'Covariate Balancing (2)', columns = 8:9) %>%
+     tab_spanner(label = 'Multi-Level Model', columns = 10:11)
   
 
 }
