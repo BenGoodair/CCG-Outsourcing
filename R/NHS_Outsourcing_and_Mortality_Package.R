@@ -61,7 +61,7 @@ Create_Annual_CCG_dataset <- function(myDataCCG){
   myDataCCG <- myDataCCG %>% mutate(Management = ifelse(myDataCCG$sic2dig=="70", 1,0))
   
   
-  myDataCCG <- myDataCCG %>% mutate(PrivateSector = ifelse((myDataCCG$match_type=="Companies House"&is.na(myDataCCG$CharityRegNo))|(!is.na(myDataCCG$CompanyNumber)& is.na(myDataCCG$CharityRegNo))| (!is.na(myDataCCG$CompanyCategory)&is.na(myDataCCG$CharityRegNo))|(myDataCCG$audit_type=="3"&myDataCCG$match_type=="No Match"&!is.na(myDataCCG$CompanyNumber)),1,0))
+  myDataCCG <- myDataCCG %>% mutate(PrivateSector = ifelse((myDataCCG$match_type=="Companies House"&is.na(myDataCCG$CharityRegNo))|(myDataCCG$CompanyName!=""& is.na(myDataCCG$CharityRegNo))| (myDataCCG$CompanyCategory!=""&is.na(myDataCCG$CharityRegNo))|(myDataCCG$audit_type=="3"&myDataCCG$match_type=="No Match"&myDataCCG$CompanyName!=""),1,0))
   
   myDataCCG <- myDataCCG %>% mutate(nogpPrivateSector = ifelse(is.na(myDataCCG$CompanyNumber)| !is.na(myDataCCG$CharityRegNo)&myDataCCG$GPServices==1&myDataCCG$Dental==1,0,1))
   
