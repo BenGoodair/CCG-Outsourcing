@@ -1,6 +1,6 @@
 #NHS Outsourcing and Mortality R Package
 
-Download_CCG_payments <- function(){myDataCCG <- download_zenodo(doi="10.5281/zenodo.5054717", path = ".", parallel = T, quiet = T)
+Download_CCG_payments <- function(){myDataCCG <- download_zenodo(doi="10.5281/zenodo.5054717",quiet = T)
 unzip("NHSSpend-v.1.0.2.zip")
 unzip("crahal-NHSSpend-1846777/data/data_final/payments_ccg_final.zip")
 myDataCCG <- read.csv("payments_ccg_final.csv")}
@@ -478,8 +478,8 @@ Create_table_1 <- function(MyAnnualDataCCG) {
                             'Robust SEs are clustered at CCG level and use a bias-reduced linearization estimator (CR2)',
                             'Satterthwaite degrees of freedom used in MLM',
                             'Demographic Control variables include: Degree education (percent), Managerial or professional occupation (percent), Ethnic minority (percent), Unemployment rate (percent) and Claimant Rate (percent)'),
-               output = "kableExtra") %>%
-    add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
+               output = "latex") #%>%
+    # add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
     # tab_spanner(label = 'Fixed Effects', columns = 2:3) \%>\%
     # tab_spanner(label = 'First Differences', columns = 4:5) %>%
     # tab_spanner(label = 'Covariate Balancing (1)', columns = 6:7) %>%
