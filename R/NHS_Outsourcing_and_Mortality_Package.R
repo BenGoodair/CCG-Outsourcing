@@ -468,7 +468,7 @@ Create_table_1 <- function(MyAnnualDataCCG) {
   FinalCBPS_mortalitysum$tidy$estimate <- FinalCBPS_mortalitysum$tidy$estimate
   
   
-  modelsummary(list("ln. Treatable Mortality [95% ci]"=FinalFEsum,"p-value"=FinalFEsum,"ln. Treatable Mortality [95% ci]"=FinalFDsum,"p-value"=FinalFDsum,"ln. Treatable Mortality [95% ci]"=FinalCBPS_GPsum,"p-value"=FinalCBPS_GPsum,"ln. Treatable Mortality [95% ci]"=FinalCBPS_mortalitysum,"p-value"=FinalCBPS_mortalitysum,"ln. Treatable Mortality [95% ci]"=FinalMLMsum,"p-value"=FinalMLMsum),
+  modelsummary(list("ln. Treatable Mortality [95\% ci]"=FinalFEsum,"p-value"=FinalFEsum,"ln. Treatable Mortality [95\% ci]"=FinalFDsum,"p-value"=FinalFDsum,"ln. Treatable Mortality [95\% ci]"=FinalCBPS_GPsum,"p-value"=FinalCBPS_GPsum,"ln. Treatable Mortality [95\% ci]"=FinalCBPS_mortalitysum,"p-value"=FinalCBPS_mortalitysum,"ln. Treatable Mortality [95\% ci]"=FinalMLMsum,"p-value"=FinalMLMsum),
                coef_omit = "Intercept|dept|year", add_rows = rows, 
                coef_map=cm,fmt = 4, estimate = c("{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value"), statistic = NULL,
                notes = list('Table reports results from multivariate longitudinal regression models.',
@@ -477,10 +477,10 @@ Create_table_1 <- function(MyAnnualDataCCG) {
                             'For full model expressions see supplementary material (S.2,p.4)',
                             'Robust SEs are clustered at CCG level and use a bias-reduced linearization estimator (CR2)',
                             'Satterthwaite degrees of freedom used in MLM',
-                            'Demographic Control variables include: Degree education (%), Managerail or professional occupation (%), Ethnic minority (%), Unemployment rate (%) and Claimant Rate (%)'),
-               output = "latex")#%>%
-    #add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
-    # tab_spanner(label = 'Fixed Effects', columns = 2:3) %>%
+                            'Demographic Control variables include: Degree education (\%), Managerail or professional occupation (\%), Ethnic minority (\%), Unemployment rate (\%) and Claimant Rate (\%)'),
+               output = "kable") %>%
+    add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
+    # tab_spanner(label = 'Fixed Effects', columns = 2:3) \%>\%
     # tab_spanner(label = 'First Differences', columns = 4:5) %>%
     # tab_spanner(label = 'Covariate Balancing (1)', columns = 6:7) %>%
     # tab_spanner(label = 'Covariate Balancing (2)', columns = 8:9) %>%
