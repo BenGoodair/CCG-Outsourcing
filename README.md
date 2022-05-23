@@ -4,7 +4,7 @@ A repository of reproducibility files for the upcoming paper in the Lancet Publi
 
 The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd files in the manuscript and supplementary material folders and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] If you experience any issues with packages, a Binder version which runs a dockerized version of all the code in a web browser is available [here](https://mybinder.org/v2/gh/BenGoodair/CCG-Outsourcing-Binder/HEAD) without any prerequisites.
 
-The Rmd file makes use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. Raw code for these functions are available in the 'raw code' folder of this repository for full transparency.
+The .Rmd files make use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. Raw code for these functions are available in the 'raw code' folder of this repository for full transparency.
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
