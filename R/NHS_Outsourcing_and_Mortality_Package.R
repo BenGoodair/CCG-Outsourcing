@@ -1708,7 +1708,7 @@ Create_S.5 <- function(MyAnnualDataCCG) {
   
   FinalFE <- lm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+Lagged_Local_Authority_Spend_per_pop+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+professional_and_managerial+factor(year)+factor(dept),  data=MyAnnualDataCCG)
   
-  Ct1 <- coef_test(FinalFE, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE
+  Ct1 <- coef_test(FinalFE, vcov = "CR2", cluster = MyAnnualDataCCG$dept, test = "Satterthwaite")$SE
   
   names(Ct1) <- names(FinalFE$coefficients)
   
