@@ -1314,12 +1314,12 @@ Create_S.1 <- function(MyAnnualDataCCG) {
   MyAnnualDataCCG1719 <- MyAnnualDataCCG1719[-c(2)]
   MyAnnualDataCCG1820 <- MyAnnualDataCCG1820[-c(2)]
   
-  MyAnnualDataCCG1315 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1315, sum)
-  MyAnnualDataCCG1416 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1416, sum)
-  MyAnnualDataCCG1517 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1517, sum)
-  MyAnnualDataCCG1618 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1618, sum)
-  MyAnnualDataCCG1719 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1719, sum)
-  MyAnnualDataCCG1820 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1820, sum)
+  MyAnnualDataCCG1315 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1315, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1416 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1416, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1517 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1517, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1618 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1618, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1719 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1719, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1820 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1820, sum,  na.rm=TRUE, na.action=NULL)
   
   threeyrspend <- rbind(MyAnnualDataCCG1315,MyAnnualDataCCG1416,MyAnnualDataCCG1517,MyAnnualDataCCG1618,MyAnnualDataCCG1719,MyAnnualDataCCG1820 )
   
@@ -2232,13 +2232,13 @@ Create_S.11 <- function(MyAnnualDataCCG) {
   
   full.model <- plm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+Lagged_Local_Authority_Spend_per_pop+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(Lagged_GDHI_per_person)+professional_and_managerial, index = c("dept", "year"), data=completeccgdata, effect = "twoway", model = "within")
   
-  logLik.plm <- function(full.model){
-    out <- -plm::nobs(full.model) * log(2 * var(full.model$residuals) * pi)/2 - deviance(full.model)/(2 * var(full.model$residuals))
-    
-    attr(out,"df") <- nobs(full.model) - full.model$df.residual
-    attr(out,"nobs") <- plm::nobs(full.model)
-    return(out)
-  }
+  # logLik.plm <- function(full.model){
+  #   out <- -plm::nobs(full.model) * log(2 * var(full.model$residuals) * pi)/2 - deviance(full.model)/(2 * var(full.model$residuals))
+  #   
+  #   attr(out,"df") <- nobs(full.model) - full.model$df.residual
+  #   attr(out,"nobs") <- plm::nobs(full.model)
+  #   return(out)
+  # }
   
   options(na.action = "na.fail")
   
