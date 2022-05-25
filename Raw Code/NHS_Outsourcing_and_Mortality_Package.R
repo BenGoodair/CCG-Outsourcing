@@ -1,6 +1,6 @@
 #NHS Outsourcing and Mortality R Package
 
-Download_CCG_payments <- function(){myDataCCG <- download_zenodo(doi="10.5281/zenodo.5054717", path = ".", parallel = T, quiet = T)
+Download_CCG_payments <- function(){myDataCCG <- download_zenodo(doi="10.5281/zenodo.5054717",quiet = T)
 unzip("NHSSpend-v.1.0.2.zip")
 unzip("crahal-NHSSpend-1846777/data/data_final/payments_ccg_final.zip")
 myDataCCG <- read.csv("payments_ccg_final.csv")}
@@ -10,7 +10,7 @@ Create_Annual_CCG_dataset <- function(myDataCCG){
   
   ###Assign Date Variable###
   
-  myDataCCG$date <- as.Date(myDataCCG$date, format =  "%d/%m/%Y")
+  myDataCCG$date <- as.Date(myDataCCG$date, format =  "%Y-%m-%d")
   
   
   #Remove payments before the formal creation of CCGs in april 2013
@@ -61,9 +61,9 @@ Create_Annual_CCG_dataset <- function(myDataCCG){
   myDataCCG <- myDataCCG %>% mutate(Management = ifelse(myDataCCG$sic2dig=="70", 1,0))
   
   
-  myDataCCG <- myDataCCG %>% mutate(PrivateSector = ifelse((myDataCCG$match_type=="Companies House"&is.na(myDataCCG$CharityRegNo))|(!is.na(myDataCCG$CompanyNumber)& is.na(myDataCCG$CharityRegNo))| (!is.na(myDataCCG$CompanyCategory)&is.na(myDataCCG$CharityRegNo))|(myDataCCG$audit_type=="3"&myDataCCG$match_type=="No Match"&!is.na(myDataCCG$CompanyNumber)),1,0))
+  myDataCCG <- myDataCCG %>% mutate(PrivateSector = ifelse((myDataCCG$match_type=="Companies House"&is.na(myDataCCG$CharityRegNo))|(myDataCCG$CompanyName!=""& is.na(myDataCCG$CharityRegNo))| (myDataCCG$CompanyCategory!=""&is.na(myDataCCG$CharityRegNo))|(myDataCCG$audit_type=="3"&myDataCCG$match_type=="No Match"&myDataCCG$CompanyName!=""),1,0))
   
-  myDataCCG <- myDataCCG %>% mutate(nogpPrivateSector = ifelse(is.na(myDataCCG$CompanyNumber)| !is.na(myDataCCG$CharityRegNo)&myDataCCG$GPServices==1&myDataCCG$Dental==1,0,1))
+  myDataCCG <- myDataCCG %>% mutate(nogpPrivateSector = ifelse(myDataCCG$CompanyName==""| !is.na(myDataCCG$CharityRegNo)&myDataCCG$GPServices==1&myDataCCG$Dental==1,0,1))
   
   
   myDataCCG <- myDataCCG %>% mutate(CharitySector = ifelse(is.na(myDataCCG$CharityRegNo), 0,1))
@@ -468,7 +468,7 @@ Create_table_1 <- function(MyAnnualDataCCG) {
   FinalCBPS_mortalitysum$tidy$estimate <- FinalCBPS_mortalitysum$tidy$estimate
   
   
-  modelsummary(list("ln. Treatable Mortality [95% ci]"=FinalFEsum,"p-value"=FinalFEsum,"ln. Treatable Mortality [95% ci]"=FinalFDsum,"p-value"=FinalFDsum,"ln. Treatable Mortality [95% ci]"=FinalCBPS_GPsum,"p-value"=FinalCBPS_GPsum,"ln. Treatable Mortality [95% ci]"=FinalCBPS_mortalitysum,"p-value"=FinalCBPS_mortalitysum,"ln. Treatable Mortality [95% ci]"=FinalMLMsum,"p-value"=FinalMLMsum),
+  modelsummary(list("ln. Treatable Mortality [.95 ci]"=FinalFEsum,"p-value"=FinalFEsum,"ln. Treatable Mortality [.95 ci]"=FinalFDsum,"p-value"=FinalFDsum,"ln. Treatable Mortality [.95 ci]"=FinalCBPS_GPsum,"p-value"=FinalCBPS_GPsum,"ln. Treatable Mortality [.95 ci]"=FinalCBPS_mortalitysum,"p-value"=FinalCBPS_mortalitysum,"ln. Treatable Mortality [.95 ci]"=FinalMLMsum,"p-value"=FinalMLMsum),
                coef_omit = "Intercept|dept|year", add_rows = rows, 
                coef_map=cm,fmt = 4, estimate = c("{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value","{estimate} [{conf.low}, {conf.high}]", "p.value"), statistic = NULL,
                notes = list('Table reports results from multivariate longitudinal regression models.',
@@ -477,14 +477,14 @@ Create_table_1 <- function(MyAnnualDataCCG) {
                             'For full model expressions see supplementary material (S.2,p.4)',
                             'Robust SEs are clustered at CCG level and use a bias-reduced linearization estimator (CR2)',
                             'Satterthwaite degrees of freedom used in MLM',
-                            'Demographic Control variables include: Degree education (%), Managerail or professional occupation (%), Ethnic minority (%), Unemployment rate (%) and Claimant Rate (%)'),
-               output = "kableExtra")%>%
-    add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
-    # tab_spanner(label = 'Fixed Effects', columns = 2:3) %>%
-    # tab_spanner(label = 'First Differences', columns = 4:5) %>%
-    # tab_spanner(label = 'Covariate Balancing (1)', columns = 6:7) %>%
-    # tab_spanner(label = 'Covariate Balancing (2)', columns = 8:9) %>%
-    # tab_spanner(label = 'Multi-Level Model', columns = 10:11)
+                            'Demographic Control variables include: Degree education (percent), Managerial or professional occupation (percent), Ethnic minority (percent), Unemployment rate (percent) and Claimant Rate (percent)'),
+               output = "gt") %>%
+    # add_header_above(c(" ", "Fixed Effects" = 2, "First Differences" = 2, "Covariate Balancing (1)" = 2, "Covariate Balancing (2)" = 2, "Multi-Level Model" = 2))
+     tab_spanner(label = 'Fixed Effects', columns = 2:3) %>%
+     tab_spanner(label = 'First Differences', columns = 4:5) %>%
+     tab_spanner(label = 'Covariate Balancing (1)', columns = 6:7) %>%
+     tab_spanner(label = 'Covariate Balancing (2)', columns = 8:9) %>%
+     tab_spanner(label = 'Multi-Level Model', columns = 10:11)
   
 
 }
@@ -512,7 +512,7 @@ Create_figure_1 <- function(MyDataCCG) {
   #myDataTrust <- myDataTrust[which(myDataTrust$amount>0),]
   
   
-  myDataCCGfig1 <- merge(myDataCCGfig1, SIC, by= "CompanyNumber", all.x=TRUE)
+  myDataCCGfig1 <- merge(myDataCCGfig1, SIC, by= "supplier", all.x=TRUE)
   ####retrieve numeric sic codes from the data####
   
   myDataCCGfig1$sic <- as.character(regmatches(myDataCCGfig1$SICCode.SicText_1, gregexpr("[[:digit:]]+", myDataCCGfig1$SICCode.SicText_1)))
@@ -564,18 +564,18 @@ Create_figure_1 <- function(MyDataCCG) {
   myDataCCGfig1all <- myDataCCGfig1
   
   #select date and amount variables
-  myDataCCGfig1private <- myDataCCGfig1private[c(3,8)]
-  myDataCCGfig1realestate <- myDataCCGfig1realestate[c(3,8)]
-  myDataCCGfig1health <- myDataCCGfig1health[c(3,8)]
-  myDataCCGfig1socialwork <- myDataCCGfig1socialwork[c(3,8)]
-  myDataCCGfig1residential <- myDataCCGfig1residential[c(3,8)]
-  myDataCCGfig1transport <- myDataCCGfig1transport[c(3,8)]
-  myDataCCGfig1businesssup <- myDataCCGfig1businesssup[c(3,8)]
-  myDataCCGfig1management <- myDataCCGfig1management[c(3,8)]
-  myDataCCGfig1computing <- myDataCCGfig1computing[c(3,8)]
-  myDataCCGfig1legal <- myDataCCGfig1legal[c(3,8)]
-  myDataCCGfig1publicad <- myDataCCGfig1publicad[c(3,8)]
-  myDataCCGfig1all <- myDataCCGfig1all[c(3,8)]
+  myDataCCGfig1private <- myDataCCGfig1private[c(3,7)]
+  myDataCCGfig1realestate <- myDataCCGfig1realestate[c(3,7)]
+  myDataCCGfig1health <- myDataCCGfig1health[c(3,7)]
+  myDataCCGfig1socialwork <- myDataCCGfig1socialwork[c(3,7)]
+  myDataCCGfig1residential <- myDataCCGfig1residential[c(3,7)]
+  myDataCCGfig1transport <- myDataCCGfig1transport[c(3,7)]
+  myDataCCGfig1businesssup <- myDataCCGfig1businesssup[c(3,7)]
+  myDataCCGfig1management <- myDataCCGfig1management[c(3,7)]
+  myDataCCGfig1computing <- myDataCCGfig1computing[c(3,7)]
+  myDataCCGfig1legal <- myDataCCGfig1legal[c(3,7)]
+  myDataCCGfig1publicad <- myDataCCGfig1publicad[c(3,7)]
+  myDataCCGfig1all <- myDataCCGfig1all[c(3,7)]
   
   #sum amount spent on each day
   myDataCCGfig1private <- aggregate(myDataCCGfig1private[-1], myDataCCGfig1private["date"], sum)
@@ -1314,12 +1314,12 @@ Create_S.1 <- function(MyAnnualDataCCG) {
   MyAnnualDataCCG1719 <- MyAnnualDataCCG1719[-c(2)]
   MyAnnualDataCCG1820 <- MyAnnualDataCCG1820[-c(2)]
   
-  MyAnnualDataCCG1315 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1315, sum)
-  MyAnnualDataCCG1416 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1416, sum)
-  MyAnnualDataCCG1517 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1517, sum)
-  MyAnnualDataCCG1618 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1618, sum)
-  MyAnnualDataCCG1719 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1719, sum)
-  MyAnnualDataCCG1820 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1820, sum)
+  MyAnnualDataCCG1315 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1315, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1416 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1416, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1517 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1517, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1618 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1618, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1719 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1719, sum,  na.rm=TRUE, na.action=NULL)
+  MyAnnualDataCCG1820 <- aggregate(. ~dept+threeyears, data=MyAnnualDataCCG1820, sum,  na.rm=TRUE, na.action=NULL)
   
   threeyrspend <- rbind(MyAnnualDataCCG1315,MyAnnualDataCCG1416,MyAnnualDataCCG1517,MyAnnualDataCCG1618,MyAnnualDataCCG1719,MyAnnualDataCCG1820 )
   
@@ -1708,7 +1708,7 @@ Create_S.5 <- function(MyAnnualDataCCG) {
   
   FinalFE <- lm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+Lagged_Local_Authority_Spend_per_pop+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(GDHI_per_person)+professional_and_managerial+factor(year)+factor(dept),  data=MyAnnualDataCCG)
   
-  Ct1 <- coef_test(FinalFE, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE
+  Ct1 <- coef_test(FinalFE, vcov = "CR2", cluster = MyAnnualDataCCG$dept, test = "Satterthwaite")$SE
   
   names(Ct1) <- names(FinalFE$coefficients)
   
@@ -2232,13 +2232,13 @@ Create_S.11 <- function(MyAnnualDataCCG) {
   
   full.model <- plm(log(Treatable_Mortality_Rate)~Lagged_Private_Procurement+Lagged_Local_Authority_Spend_per_pop+Lagged_Total_Spend+Claimant_percent+  log(CCGpop) +Unemployment_percent +BAME_percent+Qual_lvl4_percent +log(Lagged_GDHI_per_person)+professional_and_managerial, index = c("dept", "year"), data=completeccgdata, effect = "twoway", model = "within")
   
-  logLik.plm <- function(full.model){
-    out <- -plm::nobs(full.model) * log(2 * var(full.model$residuals) * pi)/2 - deviance(full.model)/(2 * var(full.model$residuals))
-    
-    attr(out,"df") <- nobs(full.model) - full.model$df.residual
-    attr(out,"nobs") <- plm::nobs(full.model)
-    return(out)
-  }
+  # logLik.plm <- function(full.model){
+  #   out <- -plm::nobs(full.model) * log(2 * var(full.model$residuals) * pi)/2 - deviance(full.model)/(2 * var(full.model$residuals))
+  #   
+  #   attr(out,"df") <- nobs(full.model) - full.model$df.residual
+  #   attr(out,"nobs") <- plm::nobs(full.model)
+  #   return(out)
+  # }
   
   options(na.action = "na.fail")
   
