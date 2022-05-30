@@ -2,9 +2,20 @@
 # CCG-Outsourcing
 Weclome to a repository of reproducibility files for the upcoming paper in the Lancet Public Health, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013-2020: An observational study of NHS privatisation.' 
 
-The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd files in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] If you experience any issues with packages, a Binder version which runs a dockerized version of all the code in a web browser is available [here](https://github.com/BenGoodair/CCG-Outsourcing-Binder) without any prerequisites.
+The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the RmD file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file and save it as 'all files' - not a text document)
 
-The .Rmd files make use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. The package also contains all functions used to create the analyses in the supplementary material of the paper. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
+If you experience any issues with packages, I am working on a Binder version which runs a dockerized version of all the code in a web browser - it is not yet finalised but will eventually be available [here](https://github.com/BenGoodair/CCG-Outsourcing-Binder) which one day may work without any prerequisites.
+
+The .Rmd file make use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. The package also contains all functions used to create the analyses in the supplementary material of the paper. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
+
+One use of this package may be to download the data directly in R if you wish to use it. To do so, the following code should work:
+
+`install.packages("devtools")
+library(devtools)
+devtools::install_github("BenGoodair/CCG-Outsourcing", ref = "master")
+library(NHSOutsourcingTMortality)
+myDataCCG <- NHSOutsourcingTMortality::Download_CCG_payments()
+`
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
