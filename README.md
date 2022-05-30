@@ -10,12 +10,13 @@ The .Rmd file make use of a custom R package "NHSOutsourcingTMortality". This pa
 
 One use of this package may be to download the data directly in R if you wish to use it. To do so, the following code should work:
 
-    `install.packages("devtools")
+    `
+    install.packages("devtools")
     library(devtools)
     devtools::install_github("BenGoodair/CCG-Outsourcing", ref = "master")
     library(NHSOutsourcingTMortality)
-    myDataCCG <- NHSOutsourcingTMortality::Download_CCG_payments()
-`
+    myDataCCG <- NHSOutsourcingTMortality::Download_CCG_payments() 
+    `
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
