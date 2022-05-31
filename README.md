@@ -1,6 +1,6 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/BenGoodair/CCG-Outsourcing-Binder/HEAD)
 # CCG-Outsourcing
-Weclome to a repository of reproducibility files for the upcoming paper in the Lancet Public Health, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013-2020: An observational study of NHS privatisation.' 
+Welcome to a repository of reproducibility files for the upcoming paper in the Lancet Public Health, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013-2020: An observational study of NHS privatisation.' 
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/scrollwarmstill.jpg"  />
