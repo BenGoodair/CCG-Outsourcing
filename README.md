@@ -10,10 +10,6 @@ The entire paper is written in RMarkdown. In theory anyone should be able to dow
 
 The .Rmd file make use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. The package also contains all functions used to create the analyses in the supplementary material of the paper. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
 
-Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
-
-If you experience any issues with packages, I am working on a Binder version which runs a dockerized version of all the code in a web browser - it is not yet finalised but will eventually be available [here](https://github.com/BenGoodair/CCG-Outsourcing-Binder).
-
 The NHS expenditure data used in this paper is openly available from:
 
 [Rahal, Charles & Mohan, John, 2022. "The Role of the Third Sector in Public Health Service Provision: Evidence from 25,338 heterogeneous procurement datasets," SocArXiv t4x52, Center for Open Science.](https://ideas.repec.org/p/osf/socarx/t4x52.html)
@@ -43,6 +39,9 @@ Data cleaning code used to create the supplementary datasets is provided for the
 
 I am extremely grateful to the endless support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
 
+Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
+
+If you experience any issues with packages, I am working on a Binder version which runs a dockerized version of all the code in a web browser - it is not yet finalised but will eventually be available [here](https://github.com/BenGoodair/CCG-Outsourcing-Binder).
 
 
 
