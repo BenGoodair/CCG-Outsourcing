@@ -30,7 +30,7 @@ If you would like to dowload the data directly to R, the custom package of funct
     `
 Then you too can make snappy visualisations of the data like this one:
 
-gifplot
+![Alt Text](https://github.com/BenGoodair/CCG-Outsourcing/blob/main/Interactive%20Plots/NHS_creeping_gif.gif)
 
 Supplementary data used in the paper's analysis is published in this repository or loaded via APIs - again the code directly pulls the data so nothing should need to be manually downloaded for the purpose of reproduction.
 
