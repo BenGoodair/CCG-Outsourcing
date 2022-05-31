@@ -18,13 +18,13 @@ The NHS expenditure data used in this paper is openly available from:
 
 [Rahal, Charles & Mohan, John, 2022. "The Role of the Third Sector in Public Health Service Provision: Evidence from 25,338 heterogeneous procurement datasets," SocArXiv t4x52, Center for Open Science.](https://ideas.repec.org/p/osf/socarx/t4x52.html)
 
-For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the minted repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
+Thanks to Charlie Rahal's admirable committment to open science, we can very easily download the data files from the minted repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
 
-If you would like to dowload the data directly to R, the custom package of functions provides an easy way of doing this:
+So if you would like to dowload the data directly to R, the custom package of functions provides an easy way of doing this:
 
     ` 
-    install.packages("pacman")
-    pacman::p_load(devtools,knitr, dplyr, dotwhisker, tidyverse, pastecs, stringr, rebus, cobalt, pracma, zoo, future.apply, runner, plm, extrafont,texreg, CBPS, sp, maptools, sf, gt, gtsummary,modelsummary, regclass, stargazer, pbkrtest, sjPlot, lme4, clubSandwich, lmerTest, sf, sp, spdep, rgdal, rgeos, tmap, tmaptools,  spgwr, grid, gridExtra,curl, kableExtra,  MuMIn, parallel, tinytex, cowplot, ggforce, ggthemes, parallel, zen4R)
+    if (!require("pacman")) install.packages("pacman")
+    pacman::p_load(devtools, utils, zen4R)
         
     devtools::install_github("BenGoodair/CCG-Outsourcing", ref = "master")
     library(NHSOutsourcingTMortality)
