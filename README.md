@@ -8,7 +8,7 @@ Weclome to a repository of reproducibility files for the upcoming paper in the L
 
 The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the Rmd file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file making sure it still ends '.Rmd', and save it as 'all files' - not a text document)
 
-The .Rmd file make use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. The package also contains all functions used to create the analyses in the supplementary material of the paper. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
+The .Rmd file makes use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper (and the very long supplementary material). The package is downloaded from the 'master' branch of this repository. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
 
 The NHS expenditure data used in this paper is openly available from:
 
@@ -33,9 +33,7 @@ Then you too can make snappy visualisations of the data like this one:
 </p>
 
 
-Supplementary data used in the paper's analysis is published in this repository or loaded via APIs - again the code directly pulls the data so nothing should need to be manually downloaded for the purpose of reproduction.
-
-Data cleaning code used to create the supplementary datasets is provided for the sake of transparency.
+Supplementary data used in the paper's analysis is published in this repository or loaded via APIs - again the code directly pulls the data so nothing should need to be manually downloaded for the purpose of reproduction. Data cleaning code used to create the supplementary datasets is provided for the sake of transparency.
 
 I am extremely grateful to the endless support and guidance of [Charles Rahal](https://crahal.github.io/) in the development of this paper.
 
