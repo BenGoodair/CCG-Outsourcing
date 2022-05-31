@@ -18,7 +18,7 @@ The NHS expenditure data used in this paper is openly available from:
 
 For the purposes of easy reproducibility, the code for our paper directly downloads and unpacks the data from the minted repository [Rahal, Knowles, Barnard and Mohan, 'Introducing NHSSpend'](https://zenodo.org/record/5054717).
 
-If you would like to dowload the files directly to R, the custom package of functions provides an easy way of doing this:
+If you would like to dowload the data directly to R, the custom package of functions provides an easy way of doing this:
 
     ` 
     install.packages("pacman")
