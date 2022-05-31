@@ -2,7 +2,9 @@
 # CCG-Outsourcing
 Weclome to a repository of reproducibility files for the upcoming paper in the Lancet Public Health, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013-2020: An observational study of NHS privatisation.' 
 
-slidergraph
+<p align="center">
+  <img src="https://https://github.com/BenGoodair/CCG-Outsourcing/blob/main/Interactive%20Plots/scrollplotwarm.html" alt="animated" />
+</p>
 
 The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the RmD file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file and save it as 'all files' - not a text document)
 
