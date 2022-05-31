@@ -1,4 +1,10 @@
 ---
+#Welcome to the repoducibility file for the paper: Goodair & Reeves. (2020). 'Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013 to 2020. An observational study of NHS privatisation.' 
+
+#Simply knitting the file should return a html version of the paper having conducted all the analyses from raw data to visualisation on your machine. 
+
+#If you have any comments or questions about the paper please reach out to me at 'benjamin.goodair@spi.ox.ac.uk'.
+
 title: Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013 to 2020. An observational study of NHS privatisation.
 author:
   - name: Benjamin Goodair
