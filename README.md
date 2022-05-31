@@ -45,4 +45,4 @@ If you experience any issues with packages, I am working on a Binder version whi
 
 [^1]: Warning: Running this code involves data to be directly downloaded to your pc. 
 [^2]: Some of the analyses involved in the paper are computationally intensive. To make them accessible, simulations are much reduced in power in the repoducibility code. 
-[^3]: Expect the Rmd file to take ~15 minutes to knit a pdf version of the paper.
+[^3]: Expect the Rmd file to take ~15 minutes to knit an html version of the paper.
