@@ -28,6 +28,9 @@ If you would like to dowload the data directly to R, the custom package of funct
     library(NHSOutsourcingTMortality)
     myDataCCG <- NHSOutsourcingTMortality::Download_CCG_payments() 
     `
+Then you too can make snappy visualisations of the data like this one:
+
+gifplot
 
 Supplementary data used in the paper's analysis is published in this repository or loaded via APIs - again the code directly pulls the data so nothing should need to be manually downloaded for the purpose of reproduction.
 
