@@ -2,19 +2,16 @@
 # CCG-Outsourcing
 Weclome to a repository of reproducibility files for the upcoming paper in the Lancet Public Health, co-authored with [Aaron Reeves](https://aaronreeves.org/): 'Outsourcing healthcare services to the private sector and treatable mortality rates in England, 2013-2020: An observational study of NHS privatisation.' 
 
- body{background-color:white;} 
-
-{"x":{"img1":"https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/scrollwarm.jpg","img2":"https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/emptywarm.jpg","options":{"addCircle":true,"hoverStart":true,"startingPoint":0},"css":null},"evals":\[\],"jsHooks":\[\]} {"viewer":{"width":450,"height":350,"padding":0,"fill":true},"browser":{"width":960,"height":500,"padding":0,"fill":false}}
-
-</head>
-<body>
-<div id="htmlwidget_container">
-  <div id="htmlwidget-739915e3c498166bbe93" style="width:960px;height:500px;" class="ricv html-widget"></div>
-</div>
-<script type="application/json" data-for="htmlwidget-739915e3c498166bbe93">{"x":{"img1":"https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/scrollwarm.jpg","img2":"https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/emptywarm.jpg","options":{"addCircle":true,"hoverStart":true,"startingPoint":0},"css":null},"evals":[],"jsHooks":[]}</script>
-<script type="application/htmlwidget-sizing" data-for="htmlwidget-739915e3c498166bbe93">{"viewer":{"width":450,"height":350,"padding":0,"fill":true},"browser":{"width":960,"height":500,"padding":0,"fill":false}}</script>
-</body>
-</html>
+ <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+<foreignObject width="100" height="100">
+    <div xmlns="https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/scrollplotwarm.html">
+        <ul>
+            <li>text</li>
+        </ul>
+        <!-- Other embed HTML element/text into SVG -->
+    </div>
+</foreignObject>
+</svg>
 
 The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the RmD file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file and save it as 'all files' - not a text document)
 
