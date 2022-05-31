@@ -6,7 +6,7 @@ Weclome to a repository of reproducibility files for the upcoming paper in the L
   <img src="https://raw.githubusercontent.com/BenGoodair/CCG-Outsourcing/main/Interactive%20Plots/scrollwarmstill.jpg"  />
 </p>
 
-The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the RmD file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file and save it as 'all files' - not a text document)
+The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the Rmd file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file and save it as 'all files' - not a text document)
 
 The .Rmd file make use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper, the package is downloaded from the 'master' branch of this repository. The package also contains all functions used to create the analyses in the supplementary material of the paper. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
 
