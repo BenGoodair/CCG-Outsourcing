@@ -449,11 +449,11 @@ Create_table_1 <- function(MyAnnualDataCCG) {
   FinalFEsum$tidy$conf.high <- FinalFEsum$tidy$estimate+(1.96*coef_test(FinalFE, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE)
   FinalFEsum$tidy$estimate <- FinalFEsum$tidy$estimate
   
-  FinalFDsum$tidy$p.value <- coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$p
-  FinalFDsum$tidy$std.error <- coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE
-  FinalFDsum$tidy$conf.low <- FinalFDsum$tidy$estimate-(1.96*coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE)
-  FinalFDsum$tidy$conf.high <- FinalFDsum$tidy$estimate+(1.96*coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE)
-  FinalFDsum$tidy$estimate <- FinalFDsum$tidy$estimate
+  # FinalFDsum$tidy$p.value <- coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$p
+  # FinalFDsum$tidy$std.error <- coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE
+  # FinalFDsum$tidy$conf.low <- FinalFDsum$tidy$estimate-(1.96*coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE)
+  # FinalFDsum$tidy$conf.high <- FinalFDsum$tidy$estimate+(1.96*coef_test(FinalFD, vcov = "CR2", cluster = plmdata$dept, test = "Satterthwaite")$SE)
+  # FinalFDsum$tidy$estimate <- FinalFDsum$tidy$estimate
   
   FinalCBPS_GPsum$tidy$p.value <- coef_test(FinalCBPS_GP, vcov = "CR2", cluster = completegpdata$dept, test = "Satterthwaite")$p
   FinalCBPS_GPsum$tidy$std.error <- coef_test(FinalCBPS_GP, vcov = "CR2", cluster = completegpdata$dept, test = "Satterthwaite")$SE
