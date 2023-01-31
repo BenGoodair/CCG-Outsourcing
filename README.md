@@ -8,7 +8,7 @@ Welcome to a repository of reproducibility files for the recent paper in the Lan
 
 The entire paper is written in RMarkdown. In theory anyone should be able to download the .Rmd file in the manuscript folder and reproduce all the analyses, text and citations in the paper without any additional files simply by knitting the file.[^1][^2][^3] (To download the Rmd file, click 'raw' on the 'CCG_Outsourcing_Manuscript.Rmd' file, right click on the page, 'save as', change the name of the file making sure it still ends '.Rmd', and save it as 'all files' - not a text document)
 
-The .Rmd file makes use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper (and the very long supplementary material). The package is downloaded from the 'master' branch of this repository. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
+The .Rmd file makes use of a custom R package "NHSOutsourcingTMortality". This package contains functions to download, clean, and analyse the data as per the paper (and the very long supplementary material). The package is published in the 'master' branch of this repository. Raw code for all functions are available in the 'raw code' folder of this repository for full transparency.
 
 The NHS expenditure data used in this paper is openly available from:
 
