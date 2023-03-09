@@ -39,7 +39,7 @@ I am extremely grateful to the endless support and guidance of [Charles Rahal](h
 
 Please get in touch with me at benjamin.goodair@spi.ox.ac.uk if you would like to discuss anything from the paper or code published in this repository.
 
-If you experience any issues with packages, I am working on a Binder version which runs a dockerized version of all the code in a web browser - it is not yet finalised but will eventually be available [here](https://github.com/BenGoodair/CCG-Outsourcing-Binder).
+If you experience any issues with packages, I'm sorry and happy to try help edit the code to work for you. I tried and failed to build a Binder version which runs a dockerized version of all the code in a web browser - it would have been available [here](https://github.com/BenGoodair/CCG-Outsourcing-Binder) but after a couple of days trying I couldn't get it to work and don't want to invest more time in it.
 
 
 
